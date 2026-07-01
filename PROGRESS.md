@@ -97,6 +97,11 @@ project-root/
   - 기존의 지나치게 컸던 배너 높이를 300px 수준으로 줄여 화면 비중을 최적화.
   - React State와 Autoplay(4초 간격)를 탑재한 캐러셀 슬라이더를 수동 조작 화살표 및 인디케이터와 함께 구현.
   - 나중에 실제 이미지를 쉽게 넣을 수 있도록 깔끔한 아이콘과 배경 그라데이션이 적용된 3종 디자인 템플릿 형태로 퍼블리싱.
+- **동물 및 보호소 데이터 수동/자동 수집 크롤링 완료**:
+  - 포인핸드 API(`/bridge/shelter/animal/recommended/condition`, `/bridge/animal/tag`, `/bridge/animal`)를 연동하여 107마리의 풍부한 유기동물 정보와 18개의 보호소 데이터를 일괄 수집하는 Python 스크립트([crawl_pawinhand.py](file:///Users/hani/Desktop/sasac_pjt/pawinhand-clone/backend/scripts/crawl_pawinhand.py)) 구현 및 수동 실행 완료.
+  - 수집된 정보를 프로젝트 데이터 규격(`Animal`, `Shelter` 스키마)에 맞춰 정규화 매핑 완료.
+  - 지도 핀 및 클러스터링을 위한 보호소 위도/경도(`lat`/`lng`) 정보를 OSM Nominatim API와 중복 방지 지역별 오프셋(jitter)을 가미한 폴백 알고리즘을 사용해 성공적으로 생성 완료.
+  - 결과 파일 [animals.json](file:///Users/hani/Desktop/sasac_pjt/pawinhand-clone/backend/data/animals.json) 및 [shelters.json](file:///Users/hani/Desktop/sasac_pjt/pawinhand-clone/backend/data/shelters.json)을 생성하여 `backend/data/` 폴더에 저장 완료.
 
 ### 🏁 Day 3 — 백엔드 [개발자 B] AI 진단·매칭 API (완료)
 > `feature/be_ai_matching` 브랜치. 개발자 B 담당(진단·매칭 체인)을 구현. 파일명은 `_B` 접미사로 담당 표시.
@@ -123,7 +128,7 @@ project-root/
 | `7.html` | **진단 1단계 (복사본)** | 로고 명이 `PAWINHAND`인 버전 (6.html과 동일) | 예비용 |
 | `5.html` | **진단 2단계** | 원하는 아이 성향 3가지 질문 (활동성, 친화도 등) | - |
 | `4.html` | **적합도 결과** | AI 진단 3단계 등급 + 양육 보완점 + 월 예상비용 | - |
-| `3.html` | **매칭 결과 목록** | 나와 어울리는 유기동물 3~5마리 추천 리스트 | 매칭 카드 클릭 시 `1.html?recommend=true`로 연결 |
+| `3.html` | **매칭 결과 목록** | 나와 어울리는 유기동물 3~5마리 추천 리스트 | - |
 | `list.html` | **전체 목록** | 수집한 보호동물을 정사각형 카드로 나열 (신규 생성) | `보호동물 보기` 링크, 클릭 시 `1.html`로 연결 (AI 멘트 미노출) |
 | `1.html` | **동물 상세** | 유기동물 개별 상세 정보 (추천 파라미터 유무에 따라 AI 박스 노출 분기) | - |
 | `2.html` | **보호소 질문지** | 입양 상담 질문 리스트 + 준비 체크리스트 + 보호소 안내 | - |
@@ -132,8 +137,3 @@ project-root/
 ---
 
 ## 🎯 다음 작업 계획 (Next Step)
-1. **[개발자 B] 실 LLM 확인**: 로컬 `.env`에 `OPENAI_API_KEY`를 넣고 `uvicorn main:app --reload`로 띄워 `/api/diagnose`·`/api/match`가 실제 `gpt-5.4-mini` 응답을 내는지 확인(현재는 키 없어 폴백으로 검증됨).
-2. **[개발자 A] 조회·질문지 추가**: `app/routers/animals_A.py`·`questions_A.py`, `app/database_A.py`, 필요 데이터(`shelters.json`·질문지 템플릿)를 만들고 `main.py`의 주석 처리된 `_A` 라우터 등록부를 활성화.
-3. **프론트 연동**: `/api/diagnose`→진단결과(#5), `/api/match`→매칭목록(#6, `animal_id`로 animals.json 조회해 카드 구성) 연결.
-4. **실데이터 교체**: 크롤링팀 수집분이 오면 `data/animals.json`을 실제 데이터로 교체(스키마 동일).
-5. **Day 4 (배포)**: Railway에 빌드·배포, 환경변수(OpenAI 키·`CORS_ORIGINS`·`DATA_DIR`) 등록.
