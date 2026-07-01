@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "backend"
+version = "0.1.0"
+description = ""
+authors = ["haneebunny <re____@naver.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.138.2"
+uvicorn = "^0.49.0"
+python-dotenv = "^1.2.2"
+langchain = "^1.3.11"
+langchain-openai = "^1.3.3"
+openai = "^2.44.0"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
