@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
@@ -56,6 +56,28 @@ export default function DiagnosePage() {
   // Step 3 Result State
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
+
+  // 로컬스토리지 복원 로직 추가
+  useEffect(() => {
+    try {
+      const savedInput = localStorage.getItem("pawinhand_survey_input");
+      if (savedInput) {
+        const data = JSON.parse(savedInput);
+        if (data.housing) setHousing(data.housing);
+        if (data.out_hours) setOutHours(data.out_hours);
+        if (data.walk_time) setWalkTime(data.walk_time);
+        if (data.pet_experience) setPetExperience(data.pet_experience);
+        if (data.budget) setBudget(data.budget);
+        if (data.child_plan) setChildPlan(data.child_plan);
+        if (data.activity_pref) setActivityPref(data.activity_pref);
+        if (data.sociability_pref) setSociabilityPref(data.sociability_pref);
+        if (data.keywords) setKeywords(data.keywords);
+        if (data.preferred_cities) setPreferredCities(data.preferred_cities);
+      }
+    } catch (e) {
+      console.warn("Failed to load saved survey input", e);
+    }
+  }, []);
 
   const toggleKeyword = (kw) => {
     if (keywords.includes(kw)) {
@@ -592,7 +614,22 @@ export default function DiagnosePage() {
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-3 w-full max-w-[500px]">
                 <button
-                  onClick={() => setStep(1)}
+                  onClick={() => {
+                    localStorage.removeItem("pawinhand_survey_input");
+                    localStorage.removeItem("pawinhand_match_results");
+                    setHousing("");
+                    setOutHours("");
+                    setWalkTime("");
+                    setPetExperience("");
+                    setBudget("");
+                    setChildPlan("");
+                    setActivityPref("");
+                    setSociabilityPref("");
+                    setKeywords([]);
+                    setPreferredCities([]);
+                    setResult(null);
+                    setStep(1);
+                  }}
                   className="flex-1 h-[52px] border-2 border-[#FF7A50] text-[#FF7A50] rounded-xl font-button-lg hover:bg-[#FFF1EC] transition-all cursor-pointer active:scale-95 flex items-center justify-center"
                 >
                   다시 진단하기
