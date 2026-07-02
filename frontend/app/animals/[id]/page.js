@@ -175,6 +175,12 @@ function AnimalDetail() {
 
   useEffect(() => {
     try {
+      localStorage.setItem("pawinhand_last_viewed_animal_id", id);
+    } catch (e) {
+      console.warn("Failed to save last viewed animal ID", e);
+    }
+
+    try {
       const savedMatches = localStorage.getItem("pawinhand_match_results");
       if (savedMatches) {
         const matches = JSON.parse(savedMatches);

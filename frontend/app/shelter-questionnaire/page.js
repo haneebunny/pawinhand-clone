@@ -52,9 +52,17 @@ export default function ShelterQuestionnairePage() {
   const [activeTab, setActiveTab] = useState("건강상태");
   const [checklist, setChecklist] = useState({});
   const [currentShelter, setCurrentShelter] = useState(null);
+  const [currentAnimal, setCurrentAnimal] = useState(null);
   const [toastMessage, setToastMessage] = useState("");
   const [dynamicQuestions, setDynamicQuestions] = useState(DEFAULT_QUESTIONS);
   const [checklistItems, setChecklistItems] = useState(DEFAULT_CHECKLIST_ITEMS);
+
+  // Application form states
+  const [applicantName, setApplicantName] = useState("");
+  const [applicantPhone, setApplicantPhone] = useState("");
+  const [customQuestions, setCustomQuestions] = useState("");
+  const [adoptionMessage, setAdoptionMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     // 1. Load active shelter from last viewed animal if available
@@ -72,21 +80,23 @@ export default function ShelterQuestionnairePage() {
         }
       }
 
-      // Check referrer to see if we came from a specific animal
-      const pathArray = document.referrer ? new URL(document.referrer).pathname.split("/") : [];
-      const isFromAnimalDetail = pathArray.includes("animals");
-      const lastAnimalId = isFromAnimalDetail ? pathArray[pathArray.length - 1] : null;
+      // Read last viewed animal ID from memory prioritised
+      const lastAnimalId = localStorage.getItem("pawinhand_last_viewed_animal_id");
 
       if (lastAnimalId) {
         const animal = animals.find((a) => a.id === lastAnimalId);
         if (animal) {
           targetShelterId = animal.shelter_id;
+          setCurrentAnimal(animal);
         }
       } else if (savedMatches) {
         try {
           const matches = JSON.parse(savedMatches);
           if (matches.length > 0) {
             targetShelterId = matches[0].shelter_id;
+            // Lookup first matching animal
+            const animal = animals.find((a) => a.id === matches[0].animal_id);
+            if (animal) setCurrentAnimal(animal);
           }
         } catch (e) {
           console.warn("Failed to parse match results", e);
@@ -100,16 +110,51 @@ export default function ShelterQuestionnairePage() {
     // 2. Fetch questionnaire from backend (POST /api/questions) with survey input payload
     const fetchQuestionnaire = async () => {
       const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+      
+      // Determine species from current animal memory safely
+      let reqSpecies = "dog";
+      let localLastAnimalId = null;
+      let localSavedMatches = null;
+
+      if (typeof window !== "undefined") {
+        localLastAnimalId = localStorage.getItem("pawinhand_last_viewed_animal_id");
+        localSavedMatches = localStorage.getItem("pawinhand_match_results");
+      }
+
+      if (localLastAnimalId) {
+        const animal = animals.find((a) => a.id === localLastAnimalId);
+        if (animal && (animal.species === "고양이" || animal.species === "cat")) {
+          reqSpecies = "cat";
+        }
+      } else if (localSavedMatches) {
+        try {
+          const matches = JSON.parse(localSavedMatches);
+          if (matches.length > 0) {
+            const animal = animals.find((a) => a.id === matches[0].animal_id);
+            if (animal && (animal.species === "고양이" || animal.species === "cat")) {
+              reqSpecies = "cat";
+            }
+          }
+        } catch (e) {
+          console.warn("Failed to check species from matches", e);
+        }
+      }
+
+      const requestPayload = {
+        species: reqSpecies,
+        ...(surveyInput || {})
+      };
+
       try {
         const response = await fetch(`${API_BASE}/api/questions`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(surveyInput || {}),
+          body: JSON.stringify(requestPayload),
         });
 
         if (response.ok) {
           const data = await response.json();
-          
+
           // Map backend questions list to local category mapping
           let mappedQuestions = { ...DEFAULT_QUESTIONS };
           if (data.questions && Array.isArray(data.questions)) {
@@ -132,7 +177,6 @@ export default function ShelterQuestionnairePage() {
         }
       } catch (error) {
         console.warn("FastAPI Server not available for questions. Simulating locally.", error);
-        // Fallback: Default to local constants (dynamicQuestions & checklistItems remain DEFAULT)
       }
     };
 
@@ -143,7 +187,7 @@ export default function ShelterQuestionnairePage() {
     setToastMessage(msg);
     setTimeout(() => {
       setToastMessage("");
-    }, 2000);
+    }, 2500);
   };
 
   const copyToClipboard = (text, label) => {
@@ -164,11 +208,93 @@ export default function ShelterQuestionnairePage() {
     });
   };
 
+  const handleSubmitApplication = async (e) => {
+    e.preventDefault();
+    if (!applicantName.trim()) {
+      alert("신청자 성함을 입력해 주세요.");
+      return;
+    }
+    if (!applicantPhone.trim()) {
+      alert("연락처를 입력해 주세요.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+
+    try {
+      // Find checked checklist items text
+      const checkedTexts = [];
+      checklistItems.forEach((item, idx) => {
+        if (checklist[idx]) {
+          checkedTexts.push(item);
+        }
+      });
+
+      // Retrieve matchScore and recommendReason from localStorage if exists
+      let localMatchScore = null;
+      let localRecommendReason = null;
+      if (typeof window !== "undefined") {
+        try {
+          const savedMatches = localStorage.getItem("pawinhand_match_results");
+          if (savedMatches && currentAnimal) {
+            const matches = JSON.parse(savedMatches);
+            const matchDetail = matches.find((m) => m.animal_id === currentAnimal.id || m.id === currentAnimal.id);
+            if (matchDetail) {
+              localMatchScore = matchDetail.match_score;
+              localRecommendReason = matchDetail.recommend_reason;
+            }
+          }
+        } catch (e) {
+          console.warn("Failed to load match details for submission", e);
+        }
+      }
+
+      const payload = {
+        name: applicantName,
+        phone: applicantPhone,
+        questions: customQuestions,
+        message: adoptionMessage,
+        animal_id: currentAnimal ? currentAnimal.id : null,
+        animal_name: currentAnimal ? currentAnimal.name : "이름 짓는 중!",
+        shelter_name: currentShelter ? currentShelter.name : "알 수 없음",
+        match_score: localMatchScore,
+        recommend_reason: localRecommendReason,
+        checked_items: checkedTexts
+      };
+
+      const res = await fetch(`${API_BASE}/api/submit-application`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        showToast("🎉 신청서 제출 완료! 슬랙 알림이 전송되었습니다.");
+
+        // Reset states
+        setApplicantName("");
+        setApplicantPhone("");
+        setCustomQuestions("");
+        setAdoptionMessage("");
+      } else {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.detail || "Failed to submit application");
+      }
+    } catch (err) {
+      console.error(err);
+      showToast(`❌ 제출 실패: ${err.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <main className="pb-8 max-w-[1024px] mx-auto px-4 md:px-6 pt-6">
       {/* Toast Notification */}
       {toastMessage && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur-md text-white text-caption px-6 py-3 rounded-full shadow-lg z-50 animate-bounce">
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-black/85 backdrop-blur-md text-white text-caption px-6 py-3 rounded-full shadow-lg z-50 animate-bounce font-semibold">
           {toastMessage}
         </div>
       )}
@@ -190,11 +316,10 @@ export default function ShelterQuestionnairePage() {
               <button
                 key={cat}
                 onClick={() => setActiveTab(cat)}
-                className={`h-[36px] px-4 rounded-full flex items-center justify-center font-button-lg text-caption transition-colors cursor-pointer ${
-                  isActive
-                    ? "bg-[#FF7A50] text-white font-semibold"
-                    : "bg-[#F5F0EB] text-on-surface-variant hover:bg-zinc-200"
-                }`}
+                className={`h-[36px] px-4 rounded-full flex items-center justify-center font-button-lg text-caption transition-colors cursor-pointer ${isActive
+                  ? "bg-[#FF7A50] text-white font-semibold"
+                  : "bg-[#F5F0EB] text-on-surface-variant hover:bg-zinc-200"
+                  }`}
               >
                 {cat}
               </button>
@@ -256,11 +381,10 @@ export default function ShelterQuestionnairePage() {
               <label
                 key={idx}
                 onClick={() => toggleChecklist(idx)}
-                className={`flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none ${
-                  isChecked
-                    ? "bg-secondary-container/10 border-secondary-container"
-                    : "bg-white border-[#F5F0EB] hover:border-zinc-200"
-                }`}
+                className={`flex items-start gap-3 p-3 rounded-xl border transition-all cursor-pointer select-none ${isChecked
+                  ? "bg-secondary-container/10 border-secondary-container"
+                  : "bg-white border-[#F5F0EB] hover:border-zinc-200"
+                  }`}
               >
                 <span className={`material-symbols-outlined shrink-0 mt-1 ${isChecked ? "text-secondary font-bold" : "text-gray-300"}`}>
                   {isChecked ? "check_box" : "check_box_outline_blank"}
@@ -274,6 +398,80 @@ export default function ShelterQuestionnairePage() {
         </div>
       </section>
 
+      {/* Inline Application Form (Orange Theme) */}
+      <section className="bg-[#FFFDFB] border border-[#FFE2D6] rounded-2xl shadow-sm p-6 mb-8">
+        <h2 className="text-[18px] font-bold text-on-surface flex items-center gap-1.5 mb-2 text-[#FF7A50]">
+          <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>edit_document</span>
+          입양 및 상담 신청서 작성
+        </h2>
+        <p className="text-caption text-zinc-500 mb-6 leading-normal">
+          {currentAnimal ? (
+            <span>대상 동물: <strong>{currentAnimal.name}</strong> ({currentAnimal.breeds}) | 소속: <strong>{currentShelter?.name}</strong></span>
+          ) : (
+            "아직 상담 대상 동물이 지정되지 않았습니다. 동물을 먼저 탐색해 보시기를 권해 드립니다."
+          )}
+        </p>
+
+        <form onSubmit={handleSubmitApplication} className="flex flex-col gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="flex flex-col gap-1.5">
+              <label className="text-caption font-semibold text-zinc-700">신청인 성함 *</label>
+              <input
+                type="text"
+                required
+                value={applicantName}
+                onChange={(e) => setApplicantName(e.target.value)}
+                placeholder="예: 홍길동"
+                className="px-3.5 h-[44px] rounded-xl border border-brand-border/80 text-body focus:outline-[#FF7A50] bg-white shadow-sm"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-caption font-semibold text-zinc-700">연락처 *</label>
+              <input
+                type="tel"
+                required
+                value={applicantPhone}
+                onChange={(e) => setApplicantPhone(e.target.value)}
+                placeholder="예: 010-1234-5678"
+                className="px-3.5 h-[44px] rounded-xl border border-brand-border/80 text-body focus:outline-[#FF7A50] bg-white shadow-sm"
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-caption font-semibold text-zinc-700">보호소에 물어보고 싶은 점</label>
+            <textarea
+              rows={3}
+              value={customQuestions}
+              onChange={(e) => setCustomQuestions(e.target.value)}
+              placeholder="위 추천 질문을 참고하시거나, 아이에 대해 궁금한 점을 적어보세요..."
+              className="p-3.5 rounded-xl border border-brand-border/80 text-body focus:outline-[#FF7A50] bg-white shadow-sm resize-none"
+            />
+          </div>
+
+          <div className="flex flex-col gap-1.5">
+            <label className="text-caption font-semibold text-zinc-700">입양 다짐 한마디</label>
+            <textarea
+              rows={3}
+              value={adoptionMessage}
+              onChange={(e) => setAdoptionMessage(e.target.value)}
+              placeholder="보호소 직원분들과 아이에게 전하고 싶은 다짐을 한마디 적어주세요..."
+              className="p-3.5 rounded-xl border border-brand-border/80 text-body focus:outline-[#FF7A50] bg-white shadow-sm resize-none"
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`w-full h-[52px] bg-[#FF7A50] hover:bg-[#e08420] text-white rounded-xl font-button-lg flex items-center justify-center gap-1.5 font-bold transition-all shadow-md active:scale-[0.98] ${isSubmitting ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
+              }`}
+          >
+            <span className="material-symbols-outlined text-[20px]">send</span>
+            {isSubmitting ? "제출 중..." : "신청서 제출하기"}
+          </button>
+        </form>
+      </section>
+
       {/* Shelter Info Panel */}
       {currentShelter && (
         <section className="bg-white border border-[#F0E5DD] rounded-2xl shadow-sm p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -282,7 +480,7 @@ export default function ShelterQuestionnairePage() {
               <span className="material-symbols-outlined text-primary-container text-[24px]">call</span>
             </div>
             <div>
-              <span className="text-[11px] font-bold text-primary-container bg-brand-primary-light px-sm py-[2px] rounded-full">상담 문의 보호소</span>
+              <span className="text-[11px] font-bold text-primary-container bg-brand-primary-light px-2 py-[2px] rounded-full">상담 문의 보호소</span>
               <h3 className="font-h3 text-[18px] text-on-surface font-bold mt-2 mb-1">{currentShelter.name}</h3>
               <p className="text-[13px] leading-normal text-on-surface-variant">{currentShelter.address}</p>
             </div>

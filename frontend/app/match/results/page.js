@@ -236,26 +236,25 @@ export default function MatchResultsPage() {
             <Link
               key={animal.id}
               href={`/animals/${animal.id}?recommend=true`}
-              className="bg-white border border-border-line rounded-xl p-4 flex gap-4 relative cursor-pointer group shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.08)] hover:-translate-y-[2px] transition-all duration-300"
+              className="bg-white border border-border-line rounded-xl p-5 flex gap-5 relative cursor-pointer group shadow-[0_2px_8px_rgba(0,0,0,0.04)] hover:shadow-[0_8px_16px_rgba(0,0,0,0.08)] hover:-translate-y-[2px] transition-all duration-300"
             >
-              {/* Circular Match Score Badge */}
-              <div className="absolute top-lg right-lg flex items-center justify-center w-[48px] h-[48px] bg-primary-fixed rounded-full shadow-sm">
-                <span className="text-primary font-bold text-body">{animal.match_score}점</span>
-              </div>
-
-              {/* Animal Photo */}
-              <div className="flex-shrink-0">
-                <div className="w-[100px] h-[100px] md:w-[120px] md:h-[120px] rounded-lg overflow-hidden bg-surface-container-low border border-border-line">
+              {/* Animal Photo & Match Score */}
+              <div className="flex flex-col items-center gap-2 flex-shrink-0 self-center">
+                <div className="w-[100px] h-[100px] md:w-[120px] md:h-[120px] rounded-lg overflow-hidden bg-surface-container-low border border-border-line shadow-inner">
                   <img
                     src={animal.photos && animal.photos.length > 0 ? animal.photos[0] : (animal.photo || "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=400")}
                     alt={animal.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
+                {/* Match Score Badge under Photo */}
+                <div className="bg-[#FFF1EC] text-[#FF7A50] font-bold text-[12px] px-2.5 py-0.5 rounded-full border border-[#FFE2D6]">
+                  매칭 {animal.match_score}점
+                </div>
               </div>
 
               {/* Text Content */}
-              <div className="flex flex-col justify-between flex-grow pr-12 md:pr-16">
+              <div className="flex flex-col justify-between flex-grow">
                 <div>
                   <div className="flex items-center gap-1 text-on-surface-variant mb-1">
                     <span className="material-symbols-outlined text-[16px] text-gray-400">location_on</span>
@@ -270,21 +269,30 @@ export default function MatchResultsPage() {
                       })()}
                     </span>
                   </div>
-                  <h3 className="text-[18px] font-semibold leading-normal text-on-surface font-bold">
-                    {animal.name && animal.name.trim() !== "" ? animal.name : "이름 짓는 중!"}
-                    <span className="text-on-surface-variant font-normal text-[13px] ml-2 text-zinc-500">
-                      [{animal.breeds}]
-                    </span>
-                    <span className="text-on-surface-variant font-normal text-[14px] ml-2 text-zinc-400">
-                      • {formatAge(animal.animal_age)}
-                    </span>
+                  
+                  {/* Title & Breed & Age (Align baseline) */}
+                  <h3 className="text-[18px] font-bold tracking-tight text-on-surface flex items-baseline gap-1.5 mt-0.5">
+                    <span className="font-extrabold">{animal.name && animal.name.trim() !== "" ? animal.name : "이름 짓는 중!"}</span>
+                    <span className="text-[13px] text-zinc-500 font-medium">[{animal.breeds}]</span>
+                    <span className="text-[13px] text-zinc-400 font-normal">• {formatAge(animal.animal_age)}</span>
                   </h3>
+
+                  {/* Animal Personality Tags */}
+                  {animal.tags && animal.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-2">
+                      {animal.tags.map((tag, tIdx) => (
+                        <span key={tIdx} className="bg-[#F5F0EB] text-zinc-600 text-[11px] px-2 py-0.5 rounded-md font-medium">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
                 <div className="mt-3">
                   <p className="text-[13px] leading-normal text-on-surface-variant leading-relaxed flex items-start gap-1 text-zinc-600">
                     <span
-                      className="material-symbols-outlined text-[16px] text-primary-container mt-[2px] shrink-0"
+                      className="material-symbols-outlined text-[16px] text-[#FF7A50] mt-[1px] shrink-0"
                       style={{ fontVariationSettings: "'FILL' 1" }}
                     >
                       recommend

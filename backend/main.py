@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app import config
-from app.routers import diagnose, match, animals, questions, votes
+from app.routers import diagnose, match, animals, questions, votes, application
 
 app = FastAPI(
     title="Pawinhand Clone API (B: AI 진단·매칭)",
@@ -51,6 +51,7 @@ app.include_router(match.router)      # POST /api/match
 app.include_router(animals.router)    # GET /api/animals
 app.include_router(questions.router)  # POST /api/questions
 app.include_router(votes.router)      # GET/POST /api/animals/{id}/votes
+app.include_router(application.router) # POST /api/submit-application
 
 
 @app.get("/", tags=["health"])
