@@ -79,6 +79,45 @@ def load_animals() -> List[dict]:
     return _load_json(config.ANIMALS_FILE)
 
 
+def save_animals(animals_list: List[dict]) -> bool:
+    """변경된 동물 정보를 animals.json에 쓰고 캐시를 비웁니다."""
+    try:
+        with open(config.ANIMALS_FILE, "w", encoding="utf-8") as f:
+            json.dump(animals_list, f, ensure_ascii=False, indent=2)
+        load_animals.cache_clear()  # 캐시 무효화
+        return True
+    except Exception as e:
+        print(f"[rag] animals.json 쓰기 실패: {e}")
+        return False
+
+
+# ---------- 이름 지어주기 투표 데이터 ----------
+def load_votes() -> dict:
+    """이름 투표 보관 파일(name_votes.json) 로드"""
+    try:
+        with open(config.VOTES_FILE, encoding="utf-8") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        # 파일이 없으면 빈 딕셔너리로 시작
+        return {}
+    except Exception as e:
+        print(f"[rag] name_votes.json 로딩 실패: {e}")
+        return {}
+
+
+def save_votes(votes_dict: dict) -> bool:
+    """이름 투표 정보를 name_votes.json에 씁니다."""
+    try:
+        # 폴더 생성 보장
+        config.VOTES_FILE.parent.mkdir(parents=True, exist_ok=True)
+        with open(config.VOTES_FILE, "w", encoding="utf-8") as f:
+            json.dump(votes_dict, f, ensure_ascii=False, indent=2)
+        return True
+    except Exception as e:
+        print(f"[rag] name_votes.json 쓰기 실패: {e}")
+        return False
+
+
 @lru_cache(maxsize=1)
 def load_screening_questions() -> List[dict]:
     """pre_adoption_screening.jsonl 질문지 룰 목록 캐시 로드"""

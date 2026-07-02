@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useState } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { animals } from "../../data/animals";
@@ -52,6 +52,77 @@ function AnimalDetail() {
 
   // Carousel State
   const [photoIndex, setPhotoIndex] = useState(0);
+
+  // 이름 투표 관련 상태 및 함수
+  const [votesInfo, setVotesInfo] = useState({ confirmed_name: null, candidates: [] });
+  const [displayName, setDisplayName] = useState("");
+  const [recommendInput, setRecommendInput] = useState("");
+  const [hasVoted, setHasVoted] = useState({});
+
+  useEffect(() => {
+    if (!animal) return;
+    setDisplayName(animal.name || "이름 없음. 지어주세요!");
+
+    const origName = animal.name || "";
+    const isNameless = !origName.trim() || origName.includes("없음") || origName.includes("지어주세요");
+
+    if (isNameless) {
+      const fetchVotes = async () => {
+        try {
+          const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+          const res = await fetch(`${apiBase}/api/animals/${id}/votes`);
+          if (res.ok) {
+            const data = await res.json();
+            setVotesInfo(data);
+            if (data.confirmed_name) {
+              setDisplayName(data.confirmed_name);
+            }
+          }
+        } catch (e) {
+          console.error("Failed to load name votes", e);
+        }
+      };
+      fetchVotes();
+    }
+  }, [id, animal]);
+
+  const handleVote = async (name) => {
+    if (hasVoted[name]) {
+      alert("이미 이 이름에 투표하셨습니다!");
+      return;
+    }
+    try {
+      const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+      const res = await fetch(`${apiBase}/api/animals/${id}/vote`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setVotesInfo(data);
+        setHasVoted(prev => ({ ...prev, [name]: true }));
+        if (data.confirmed_name) {
+          setDisplayName(data.confirmed_name);
+          alert(`🎉 축하합니다! "${data.confirmed_name}" 이름이 5표를 얻어 공식 이름으로 확정되었습니다!`);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to submit name vote", e);
+    }
+  };
+
+  const handleRecommend = async (e) => {
+    e.preventDefault();
+    const cleanName = recommendInput.trim();
+    if (!cleanName) return;
+    if (cleanName.length > 10) {
+      alert("이름은 10자 이내로 입력해 주세요.");
+      return;
+    }
+    await handleVote(cleanName);
+    setRecommendInput("");
+  };
 
   if (!animal) {
     return (
@@ -195,7 +266,7 @@ function AnimalDetail() {
             <div className="flex flex-col gap-1 bg-white border border-brand-border p-5 rounded-2xl shadow-sm">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="text-[28px] font-bold tracking-tight text-on-surface leading-tight">
-                  {animal.name || "이름 없음. 지어주세요!"}
+                  {displayName}
                 </h1>
                 <span className="text-zinc-400 text-[20px] font-light">·</span>
                 <span className="text-[16px] text-zinc-500 font-medium">
@@ -211,6 +282,68 @@ function AnimalDetail() {
                 {formatSex(animal.animal_sex)} ({neuteredText}) · {formatAge(animal.animal_age)} · {animal.animal_weight}kg
               </p>
             </div>
+
+            {/* 이름 지어주기 투표소 미니 카드 */}
+            {!votesInfo.confirmed_name && (!animal.name || animal.name.includes("없음") || animal.name.includes("지어주세요")) && (
+              <div className="bg-white border border-brand-border p-5 rounded-2xl shadow-sm flex flex-col gap-4">
+                <div className="flex items-center gap-2 text-[#FF7A50]">
+                  <span className="material-symbols-outlined text-[20px]" style={{ fontVariationSettings: "'FILL' 1" }}>how_to_vote</span>
+                  <h4 className="font-bold text-[16px] text-on-surface">🗳️ 이름 지어주기 투표소</h4>
+                </div>
+                <p className="text-caption text-zinc-500 leading-normal">
+                  아직 이름이 없는 친구예요. 예쁜 이름을 직접 추천하거나, 다른 추천된 마음에 드는 이름 후보에 투표해 주세요! (5표 이상 획득 시 공식 이름으로 지정됩니다)
+                </p>
+                
+                {/* 후보군 목록 */}
+                <div className="flex flex-col gap-2.5 max-h-[160px] overflow-y-auto pr-1">
+                  {votesInfo.candidates.map((c, idx) => (
+                    <div key={idx} className="flex items-center justify-between bg-zinc-50 border border-brand-border/40 px-3.5 py-2.5 rounded-xl">
+                      <div className="flex items-center gap-3">
+                        {idx === 0 && votesInfo.candidates.length > 0 && (
+                          <span className="text-[12px] bg-[#FF7A50] text-white px-2 py-0.5 rounded-md font-bold">🔥 1등</span>
+                        )}
+                        <span className="text-[14px] font-bold text-zinc-800">"{c.name}"</span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <span className="text-[12px] text-zinc-500 font-semibold">{c.votes}표</span>
+                        <button
+                          onClick={() => handleVote(c.name)}
+                          disabled={hasVoted[c.name]}
+                          className={`h-7 px-3 text-[12px] font-bold rounded-lg flex items-center justify-center gap-1 transition-all active:scale-95 cursor-pointer ${
+                            hasVoted[c.name] 
+                              ? "bg-zinc-200 text-zinc-400"
+                              : "bg-[#FFF1EC] text-[#FF7A50] hover:bg-[#FFE2D6]"
+                          }`}
+                        >
+                          👍 투표
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {votesInfo.candidates.length === 0 && (
+                    <p className="text-center py-4 text-zinc-400 text-caption">아직 등록된 후보 이름이 없습니다.</p>
+                  )}
+                </div>
+
+                {/* 추천 제출 폼 */}
+                <form onSubmit={handleRecommend} className="flex gap-2 border-t border-brand-border/40 pt-4">
+                  <input
+                    type="text"
+                    value={recommendInput}
+                    onChange={(e) => setRecommendInput(e.target.value)}
+                    placeholder="새로운 이름 후보를 추천해 보세요..."
+                    className="flex-1 px-3.5 h-[38px] rounded-lg border border-brand-border/60 text-caption focus:outline-[#FF7A50]"
+                    maxLength={10}
+                  />
+                  <button
+                    type="submit"
+                    className="h-[38px] px-4 bg-[#FF7A50] hover:bg-[#e08420] text-white rounded-lg text-caption font-bold flex items-center justify-center transition-colors cursor-pointer"
+                  >
+                    추천하기
+                  </button>
+                </form>
+              </div>
+            )}
 
             {/* 6 Grids Core info */}
             <div className="grid grid-cols-2 gap-2.5">
@@ -279,7 +412,7 @@ function AnimalDetail() {
               <div className="flex-1">
                 <h4 className="text-body font-bold text-on-primary-container mb-2 text-[16px]">왜 이 아이를 추천했나요?</h4>
                 <p className="text-[15px] font-body text-zinc-800 leading-relaxed">
-                  {formatNameWithSubjectJosa(animal.name)} {recommendReason}
+                  {formatNameWithSubjectJosa(displayName)} {recommendReason}
                 </p>
               </div>
             </section>
