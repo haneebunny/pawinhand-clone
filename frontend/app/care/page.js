@@ -14,9 +14,18 @@ export default function CarePage() {
   const [highActivity, setHighActivity] = useState(false);
   const [walkTimeLong, setWalkTimeLong] = useState(false);
   const [firstAdoption, setFirstAdoption] = useState(false);
+  const [catAdoption, setCatAdoption] = useState(false);
 
   // Checked items list (State strictly managed in React useState as requested)
   const [checkedItems, setCheckedItems] = useState({});
+  const [imageErrors, setImageErrors] = useState({});
+
+  const handleImageError = (itemId) => {
+    setImageErrors((prev) => ({
+      ...prev,
+      [itemId]: true,
+    }));
+  };
 
   useEffect(() => {
     const loadData = async () => {
@@ -76,37 +85,43 @@ export default function CarePage() {
     }));
   };
 
-  // Helper to determine if an item should display personalization badge
-  const getItemBadgeInfo = (itemId) => {
-    if (!prodRules) return null;
+  // Helper to determine all personalization badges an item matches (Multiple support)
+  const getItemBadges = (itemId) => {
+    if (!prodRules) return [];
+    const activeBadges = [];
 
-    // Check matches in order
     if (firstAdoption) {
       const rule = prodRules.find((r) => r.rule_id === "first_adoption");
       if (rule && rule.item_ids.includes(itemId)) {
-        return { badge: rule.badge, reason: rule.badge_reason };
+        activeBadges.push({ badge: rule.badge, reason: rule.badge_reason });
       }
     }
     if (outHoursLong) {
       const rule = prodRules.find((r) => r.rule_id === "long_absence");
       if (rule && rule.item_ids.includes(itemId)) {
-        return { badge: rule.badge, reason: rule.badge_reason };
+        activeBadges.push({ badge: rule.badge, reason: rule.badge_reason });
       }
     }
     if (highActivity) {
       const rule = prodRules.find((r) => r.rule_id === "high_activity");
       if (rule && rule.item_ids.includes(itemId)) {
-        return { badge: rule.badge, reason: rule.badge_reason };
+        activeBadges.push({ badge: rule.badge, reason: rule.badge_reason });
       }
     }
     if (walkTimeLong) {
       const rule = prodRules.find((r) => r.rule_id === "long_walk");
       if (rule && rule.item_ids.includes(itemId)) {
-        return { badge: rule.badge, reason: rule.badge_reason };
+        activeBadges.push({ badge: rule.badge, reason: rule.badge_reason });
+      }
+    }
+    if (catAdoption) {
+      const rule = prodRules.find((r) => r.rule_id === "cat_adoption");
+      if (rule && rule.item_ids.includes(itemId)) {
+        activeBadges.push({ badge: rule.badge, reason: rule.badge_reason });
       }
     }
 
-    return null;
+    return activeBadges;
   };
 
   return (
@@ -193,6 +208,16 @@ export default function CarePage() {
             >
               🐕 산책 1시간 이상
             </button>
+            <button
+              onClick={() => setCatAdoption(!catAdoption)}
+              className={`px-3 py-1.5 rounded-full text-[12px] font-bold transition-all flex items-center gap-1 cursor-pointer border ${
+                catAdoption
+                  ? "bg-[#FF7A50] text-white border-transparent shadow-sm"
+                  : "bg-white text-zinc-600 border-[#E8DEC9] hover:bg-zinc-50"
+              }`}
+            >
+              🐱 고양이 입양
+            </button>
           </div>
         </div>
 
@@ -200,7 +225,7 @@ export default function CarePage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {prodItems?.map((item) => {
             const isChecked = !!checkedItems[item.id];
-            const badgeInfo = getItemBadgeInfo(item.id);
+            const activeBadges = getItemBadges(item.id);
 
             return (
               <div
@@ -236,12 +261,23 @@ export default function CarePage() {
                     )}
                   </div>
 
-                  {/* 2. Image Placeholder (No image_url is in data) */}
-                  <div className="mt-3 aspect-[16/10] w-full rounded-lg bg-[#F5ECE5] flex flex-col items-center justify-center text-[#B0A096] gap-1 overflow-hidden border border-[#E9DFD8]">
-                    <span className="material-symbols-outlined text-[28px] text-[#A09086]">
-                      {item.id === 8 ? "videocam" : item.id === 7 ? "schedule" : item.id === 9 ? "sports_tennis" : "shopping_bag"}
-                    </span>
-                    <span className="text-[11px] font-medium">이미지 준비중</span>
+                  {/* 2. Image loader / Placeholder */}
+                  <div className="mt-3 aspect-[16/10] w-full rounded-lg bg-[#F5ECE5] flex flex-col items-center justify-center text-[#B0A096] overflow-hidden border border-[#E9DFD8] relative">
+                    {!imageErrors[item.id] ? (
+                      <img
+                        src={item.image_url || `/img/care_${item.id}.png`}
+                        alt={item.name}
+                        onError={() => handleImageError(item.id)}
+                        className="w-full h-full object-contain p-2 bg-white"
+                      />
+                    ) : (
+                      <div className="flex flex-col items-center justify-center gap-1">
+                        <span className="material-symbols-outlined text-[28px] text-[#A09086]">
+                          {item.id === 8 ? "videocam" : item.id === 7 ? "schedule" : item.id === 9 ? "sports_tennis" : "shopping_bag"}
+                        </span>
+                        <span className="text-[11px] font-medium">이미지 준비중</span>
+                      </div>
+                    )}
                   </div>
 
                   {/* Why Description */}
@@ -252,18 +288,22 @@ export default function CarePage() {
 
                 {/* Card Footer (Personalization Badge & CTA) */}
                 <div className="mt-4 pt-3 border-t border-[#F5ECE5]">
-                  {/* Badge Reason (Tooltip/Text layout) */}
-                  {badgeInfo && (
-                    <div className="mb-2 bg-[#FFF1EC] border border-[#FFE2D6] px-2.5 py-1.5 rounded-lg flex flex-col gap-0.5">
-                      <div className="flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 rounded-full bg-[#FF7A50] animate-pulse"></span>
-                        <span className="text-[10px] font-extrabold text-[#FF7A50] uppercase tracking-wide">
-                          {badgeInfo.badge}
-                        </span>
-                      </div>
-                      <span className="text-[10.5px] font-semibold text-[#852400]">
-                        {badgeInfo.reason}
-                      </span>
+                  {/* Badge Reasons (Multiple support) */}
+                  {activeBadges.length > 0 && (
+                    <div className="mb-2 flex flex-col gap-1.5">
+                      {activeBadges.map((badgeInfo, idx) => (
+                        <div key={idx} className="bg-[#FFF1EC] border border-[#FFE2D6] px-2.5 py-1.5 rounded-lg flex flex-col gap-0.5 animate-in fade-in slide-in-from-top-1 duration-150">
+                          <div className="flex items-center gap-1">
+                            <span className="w-1.5 h-1.5 rounded-full bg-[#FF7A50] animate-pulse"></span>
+                            <span className="text-[10px] font-extrabold text-[#FF7A50] uppercase tracking-wide">
+                              {badgeInfo.badge}
+                            </span>
+                          </div>
+                          <span className="text-[10.5px] font-semibold text-[#852400]">
+                            {badgeInfo.reason}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   )}
 

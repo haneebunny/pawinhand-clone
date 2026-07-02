@@ -2,7 +2,7 @@ import "./globals.css";
 import Header from "./components/Header";
 
 export const metadata = {
-  title: "포인핸드 | 유기동물 입양",
+  title: "포인핸드 | 유기동물 입양 - 유기견 입양 & 유기묘 입양 | 전국 동물보호센터 연결",
   description: "포인핸드 클론코딩 + AI 매칭 + 지도 시각화 서비스",
 };
 

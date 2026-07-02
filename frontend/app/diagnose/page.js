@@ -213,9 +213,16 @@ export default function DiagnosePage() {
       {/* STEP 1: 생활환경 입력 */}
       {step === 1 && (
         <div>
-          <div className="mb-8">
-            <h1 className="text-[28px] font-bold tracking-tight leading-tight text-on-surface mb-2">입양 적합도 진단</h1>
-            <p className="text-[13px] leading-normal text-on-surface-variant">나와 잘 맞는 아이를 찾기 위해 생활환경을 알려주세요.</p>
+          <div className="border-b border-[#F0E5DD] pb-6 mb-8 w-full">
+            <span className="font-caption text-[11px] font-bold text-[#FF7A50] bg-[#FFF1EC] px-2.5 py-1 rounded-full uppercase tracking-wider">
+              🔬 AI Diagnostic Survey - Step 1
+            </span>
+            <h1 className="text-[28px] md:text-[32px] font-black text-zinc-800 mt-3 leading-tight">
+              입양 적합도 진단
+            </h1>
+            <p className="text-[14px] md:text-[15px] text-[#8B716A] mt-1.5 font-medium">
+              나와 잘 맞는 아이를 찾기 위해 생활환경을 알려주세요.
+            </p>
           </div>
           
           <div className="flex items-center gap-2 mb-12">
@@ -374,15 +381,21 @@ export default function DiagnosePage() {
       {/* STEP 2: 원하는 아이 성향 입력 */}
       {step === 2 && (
         <div>
-          <div className="mb-8">
-            <div className="flex justify-between items-end mb-2">
-              <h1 className="text-[28px] font-bold tracking-tight leading-tight text-on-surface">어떤 아이와 잘 맞을까요?</h1>
-              <span className="text-primary-container font-bold font-body">2 / 2</span>
+          <div className="border-b border-[#F0E5DD] pb-6 mb-8 w-full">
+            <div className="flex justify-between items-center">
+              <span className="font-caption text-[11px] font-bold text-[#FF7A50] bg-[#FFF1EC] px-2.5 py-1 rounded-full uppercase tracking-wider">
+                🔬 AI Diagnostic Survey - Step 2
+              </span>
+              <span className="text-[11px] font-bold text-[#FF7A50] bg-[#FFF1EC] px-2.5 py-0.5 rounded-full shrink-0">
+                2 / 2 단계
+              </span>
             </div>
-            <div className="w-full h-1 bg-[#F5F0EB] rounded-full overflow-hidden mb-3">
-              <div className="w-full h-full bg-primary-container"></div>
-            </div>
-            <p className="text-on-surface-variant text-[13px] leading-normal">함께 지내고 싶은 아이의 성향을 가볍게 골라주세요.</p>
+            <h1 className="text-[28px] md:text-[32px] font-black text-zinc-800 mt-3 leading-tight">
+              어떤 아이와 잘 맞을까요?
+            </h1>
+            <p className="text-[14px] md:text-[15px] text-[#8B716A] mt-1.5 font-medium">
+              함께 지내고 싶은 아이의 성향을 가볍게 골라주세요.
+            </p>
           </div>
 
           {/* 활동성 선호 */}
