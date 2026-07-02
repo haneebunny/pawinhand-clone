@@ -41,6 +41,32 @@ def get_category_by_title(title: str) -> str:
         return "사회성"
     return "입양절차"
 
+def format_to_friendly_question(text: str) -> str:
+    text = text.strip()
+    # 통계 및 세부 안내 수치에 대한 질문 변환식 보정
+    if "월평균 양육비" in text:
+        return "월평균 약 18만 원 수준의 예상 양육비를 매달 안정적으로 지출할 준비가 되셨나요?"
+    if "초기비용" in text or "초기 입양" in text:
+        return "첫 용품 마련 및 초기 입양 비용(약 50~100만 원)을 지출할 예산이 준비되어 있나요?"
+    if "보험 또는 적금 권장" in text:
+        return "반려동물의 갑작스러운 부상이나 질병 치료비에 대비해 보험이나 비상 적금을 고려하고 계신가요?"
+    if "방묘창" in text and "방묘문" in text:
+        return "고양이의 안전을 위한 방묘창 및 방묘문(150cm 이상) 설치 계획이 있으신가요?"
+    
+    # 어미를 부드러운 존댓말 의문문으로 변환
+    if text.endswith("는가"):
+        text = text[:-2] + "나요?"
+    elif text.endswith("인가"):
+        text = text[:-2] + "인가요?"
+    elif text.endswith("가"):
+        text = text[:-1] + "나요?"
+    elif text.endswith("다"):
+        text = text[:-1] + "나요?"
+    
+    if not text.endswith("?"):
+        text += "?"
+    return text
+
 @router.post("/questions")
 def get_questions(payload: QuestionRequest):
     """
@@ -57,10 +83,10 @@ def get_questions(payload: QuestionRequest):
         print(f"[questions] 질문 데이터 로드 오류: {e}")
         return {"questions": [], "checklist": []}
     
-    # Filter by species
+    # Filter by species AND bundle == "A" (자가 점검 적합 판단 데이터만 추출하여 매칭 가이드라인 서술형 노출 방지)
     filtered_raw = [
         q for q in all_questions
-        if q.get("species", "").strip().lower() == species_lower
+        if q.get("species", "").strip().lower() == species_lower and q.get("bundle") == "A"
     ]
     
     # Map to frontend expected format: [{"category": "...", "text": "..."}]
@@ -75,17 +101,20 @@ def get_questions(payload: QuestionRequest):
         criteria = q.get("criteria", [])
         if criteria:
             for c in criteria[:2]: # Get up to 2 items
+                friendly_c = format_to_friendly_question(c)
                 questions_list.append({
                     "category": category,
-                    "text": c
+                    "text": friendly_c
                 })
                 # Add to checklist as well
-                checklist_set.add(c)
+                checklist_set.add(friendly_c)
         else:
             # Fallback to guide/title
+            raw_text = q.get("guide", title)
+            friendly_text = format_to_friendly_question(raw_text)
             questions_list.append({
                 "category": category,
-                "text": q.get("guide", title)
+                "text": friendly_text
             })
             
     # Default fallback checklist items if too short

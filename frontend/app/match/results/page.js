@@ -262,7 +262,8 @@ export default function MatchResultsPage() {
                       {(() => {
                         const city = animal.city || "";
                         const loc = animal.found_location || "";
-                        if (city && !loc.startsWith(city) && !loc.includes("서울") && !loc.includes("경기") && !loc.includes("경남")) {
+                        const hasProvince = ["서울", "경기", "인천", "강원", "충청", "충남", "충북", "전라", "전남", "전북", "경상", "경남", "경북", "제주", "부산", "대구", "울산", "광주", "대전", "세종"].some(prov => loc.includes(prov));
+                        if (city && !loc.startsWith(city) && !hasProvince) {
                           return `${city} ${loc}`;
                         }
                         return loc;
