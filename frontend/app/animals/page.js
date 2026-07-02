@@ -2,6 +2,7 @@
 
 import { Suspense, useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import AnimalCard from "../components/AnimalCard";
 import { useSearchParams, useRouter } from "next/navigation";
 import { animals } from "../data/animals";
 import { shelters } from "../data/shelters";
@@ -391,53 +392,7 @@ function AnimalsList() {
         {/* 4x5 Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
           {paginatedAnimals.map((animal) => (
-            <Link
-              key={animal.id}
-              href={`/animals/${animal.id}`}
-              className="bg-white rounded-xl border border-surface-variant/30 overflow-hidden shadow-sm group cursor-pointer hover:shadow-md transition-all duration-300"
-            >
-              {/* Image aspect-square */}
-              <div className="relative aspect-square overflow-hidden bg-surface-container">
-                <img
-                  src={animal.photos && animal.photos[0] ? animal.photos[0] : "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=400"}
-                  alt={animal.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute top-2 right-2 bg-black/35 backdrop-blur-md px-2.5 py-1 rounded-lg flex flex-col items-center justify-center gap-0.5 min-w-[32px]">
-                  <span
-                    className="material-symbols-outlined text-[15px] text-[#FF7A50]"
-                    style={{ fontVariationSettings: "'FILL' 1" }}
-                  >
-                    notifications
-                  </span>
-                  <span className="text-white text-[10px] font-bold leading-none">
-                    {animal.bell_count || 0}
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-3">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-on-surface text-[18px] font-bold leading-normal truncate max-w-[120px]">
-                    {animal.name && animal.name.trim() !== "" && !animal.name.includes("없음") && !animal.name.includes("지어주세요") ? animal.name : "이름 짓는 중!"}
-                  </span>
-                  <span className="text-on-surface-variant text-[13px] leading-normal">
-                    {animal.animal_sex === "수컷" ? "♂️" : animal.animal_sex === "암컷" ? "♀️" : "❓"}
-                  </span>
-                </div>
-                <p className="text-on-surface-variant text-[13px] leading-normal mb-3 truncate">
-                  {animal.breeds} • {formatAge(animal.animal_age)}
-                </p>
-                <div className="pt-2 border-t border-surface-variant/20">
-                  <p className="font-caption text-[11px] text-on-surface-variant truncate">
-                    {(animal.notice_no && animal.notice_no.split("-")[0]) || "보호"}보호소
-                  </p>
-                  <p className="font-caption text-[11px] text-primary-container font-bold">
-                    {(animal.notice_start || "").replace(/-/g, ".")}~{(animal.notice_end || "").replace(/-/g, ".")}
-                  </p>
-                </div>
-              </div>
-            </Link>
+            <AnimalCard key={animal.id} animal={animal} />
           ))}
         </div>
 
