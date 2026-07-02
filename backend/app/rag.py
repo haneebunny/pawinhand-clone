@@ -1,5 +1,5 @@
 """
-rag_B.py — [개발자 B] RAG 참고자료 로더 + 매칭용 동물 데이터 로더.
+rag.py — [개발자 B] RAG 참고자료 로더 + 매칭용 동물 데이터 로더.
 
 이 프로젝트의 RAG는 벡터DB를 쓰지 않습니다. (분량이 A4 1~2장이라 불필요)
 대신 참고자료(jsonl)를 읽어 '텍스트 한 덩어리'로 만들어 프롬프트 앞에 그대로 붙입니다.
@@ -24,9 +24,9 @@ def _load_jsonl(path) -> List[dict]:
                 if line:
                     rows.append(json.loads(line))
     except FileNotFoundError:
-        print(f"[rag_B] 파일 없음: {path}")
+        print(f"[rag] 파일 없음: {path}")
     except json.JSONDecodeError as e:
-        print(f"[rag_B] JSONL 형식 오류({path}): {e}")
+        print(f"[rag] JSONL 형식 오류({path}): {e}")
     return rows
 
 
@@ -36,10 +36,10 @@ def _load_json(path) -> list:
             data = json.load(f)
         return data if isinstance(data, list) else [data]
     except FileNotFoundError:
-        print(f"[rag_B] 파일 없음: {path}")
+        print(f"[rag] 파일 없음: {path}")
         return []
     except json.JSONDecodeError as e:
-        print(f"[rag_B] JSON 형식 오류({path}): {e}")
+        print(f"[rag] JSON 형식 오류({path}): {e}")
         return []
 
 
