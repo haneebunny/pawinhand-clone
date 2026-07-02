@@ -224,10 +224,15 @@ function AnimalsList() {
     <main className="pb-8">
       {/* Page Title and Filters */}
       <section className="max-w-[1024px] mx-auto px-4 md:px-6 mt-8">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-3 mb-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-3 mb-8 border-b border-[#F0E5DD] pb-6 w-full">
           <div>
-            <h1 className="text-[28px] font-bold tracking-tight leading-tight text-on-surface font-bold">유기동물 보호 목록</h1>
-            <p className="text-[13px] leading-normal text-on-surface-variant mt-1">
+            <span className="font-caption text-[11px] font-bold text-[#FF7A50] bg-[#FFF1EC] px-2.5 py-1 rounded-full uppercase tracking-wider">
+              🐾 ADOPTION SEARCH DIRECTORY
+            </span>
+            <h1 className="text-[28px] md:text-[32px] font-black text-zinc-800 mt-3 leading-tight">
+              유기동물 보호 목록
+            </h1>
+            <p className="text-[14px] md:text-[15px] text-[#8B716A] mt-1.5 font-medium">
               {activeShelter
                 ? `[${activeShelter.name}]에서 보호 중인 아이들을 보여드려요.`
                 : "새로운 보호자를 애타게 기다리고 있는 아이들을 만나보세요."
@@ -236,9 +241,9 @@ function AnimalsList() {
           </div>
           <Link
             href="/map"
-            className="flex items-center gap-1 bg-white border border-surface-variant/50 px-4 py-2 rounded-lg text-[16px] font-semibold text-on-surface-variant hover:bg-surface-container-low transition-colors"
+            className="flex items-center gap-1.5 bg-white border border-[#FFE2D6] hover:bg-[#FFFDFB] text-[#FF7A50] px-4.5 py-2.5 rounded-xl text-[13.5px] font-bold active:scale-98 transition-all shadow-sm shrink-0 cursor-pointer"
           >
-            <span className="material-symbols-outlined text-[20px]">map</span>지도로 보기
+            <span className="material-symbols-outlined text-[18px]">map</span>지도로 보기
           </Link>
         </div>
 

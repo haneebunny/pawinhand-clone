@@ -79,6 +79,20 @@
       "why": "입양 첫 주 숨어 쉴 '자기 공간'이 있어야 새 환경에 잘 적응해요.",
       "coupang_query": "강아지 방석 하우스",
       "coupang_url": "https://www.coupang.com/np/search?q=강아지+방석+하우스"
+    },
+    {
+      "id": 11,
+      "name": "캣타워",
+      "why": "수직 공간을 좋아하는 고양이들의 본능을 충족하고 운동량을 확보해 줘요.",
+      "coupang_query": "고양이 캣타워",
+      "coupang_url": "https://www.coupang.com/np/search?q=고양이+캣타워"
+    },
+    {
+      "id": 12,
+      "name": "스크래쳐",
+      "why": "발톱 관리 및 스트레스 해소에 필수. 가구 훼손을 방지해 줍니다.",
+      "coupang_query": "고양이 스크래쳐",
+      "coupang_url": "https://www.coupang.com/np/search?q=고양이+스크래쳐"
     }
   ],
   "personalization_rules": [
@@ -109,6 +123,13 @@
       "item_ids": [1, 2, 5, 6],
       "badge": "첫 입양 필수",
       "badge_reason": "처음 입양한다면 이것부터 준비하세요"
+    },
+    {
+      "rule_id": "cat_adoption",
+      "condition": { "field": "cat_pref", "operator": "==", "value": "고양이" },
+      "item_ids": [11, 12],
+      "badge": "고양이 전용",
+      "badge_reason": "고양이를 입양하신다면 필수품이에요!"
     }
   ]
 }
