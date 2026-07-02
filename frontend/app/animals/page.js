@@ -6,6 +6,18 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { animals } from "../data/animals";
 import { shelters } from "../data/shelters";
 
+function formatAge(age) {
+  if (typeof age === "number") {
+    if (age >= 12) {
+      const years = Math.floor(age / 12);
+      const months = age % 12;
+      return months > 0 ? `${years}살 ${months}개월` : `${years}살`;
+    }
+    return `${age}개월`;
+  }
+  return age;
+}
+
 function AnimalsList() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -111,7 +123,7 @@ function AnimalsList() {
                   </span>
                 </div>
                 <p className="text-on-surface-variant text-[13px] leading-normal mb-3 truncate">
-                  {animal.breeds} • {animal.animal_age}
+                  {animal.breeds} • {formatAge(animal.animal_age)}
                 </p>
                 <div className="pt-2 border-t border-surface-variant/20">
                   <p className="font-caption text-[11px] text-on-surface-variant truncate">

@@ -6,6 +6,28 @@ import Link from "next/link";
 import { animals } from "../../data/animals";
 import { shelters } from "../../data/shelters";
 
+function formatAge(age) {
+  if (typeof age === "number") {
+    if (age >= 12) {
+      const years = Math.floor(age / 12);
+      const months = age % 12;
+      return months > 0 ? `${years}살 ${months}개월` : `${years}살`;
+    }
+    return `${age}개월`;
+  }
+  return age;
+}
+
+function formatSex(sex) {
+  if (sex === "수컷" || sex === "수" || sex === "남아") {
+    return "남아";
+  }
+  if (sex === "암컷" || sex === "암" || sex === "여아") {
+    return "여아";
+  }
+  return "알 수 없음";
+}
+
 function AnimalDetail() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -78,7 +100,7 @@ function AnimalDetail() {
     );
   };
 
-  const neuteredText = animal.neutered === "예" || animal.neutered === "완료" ? "완료" : animal.neutered === "아니오" || animal.neutered === "미완료" ? "미완료" : "알 수 없음";
+  const neuteredText = animal.neutered === "예" || animal.neutered === "완료" || animal.neutered === true ? "완료" : animal.neutered === "아니오" || animal.neutered === "미완료" || animal.neutered === false ? "미완료" : "알 수 없음";
 
   return (
     <div className="min-h-screen pb-[120px] bg-brand-ivory">
@@ -169,7 +191,7 @@ function AnimalDetail() {
                 )}
               </div>
               <p className="text-[14px] text-zinc-400 mt-1">
-                {animal.animal_sex} ({neuteredText}) · {animal.animal_age} · {animal.animal_weight}kg
+                {formatSex(animal.animal_sex)} ({neuteredText}) · {formatAge(animal.animal_age)} · {animal.animal_weight}kg
               </p>
             </div>
 
@@ -181,11 +203,11 @@ function AnimalDetail() {
               </div>
               <div className="bg-white border border-brand-border p-3.5 rounded-xl flex flex-col gap-0.5 shadow-sm">
                 <span className="text-caption font-caption text-zinc-400 text-[11px] font-semibold">나이</span>
-                <span className="text-body font-body font-bold text-zinc-800 text-[14px]">{animal.animal_age}</span>
+                <span className="text-body font-body font-bold text-zinc-800 text-[14px]">{formatAge(animal.animal_age)}</span>
               </div>
               <div className="bg-white border border-brand-border p-3.5 rounded-xl flex flex-col gap-0.5 shadow-sm">
                 <span className="text-caption font-caption text-zinc-400 text-[11px] font-semibold">성별</span>
-                <span className="text-body font-body font-bold text-zinc-800 text-[14px]">{animal.animal_sex}</span>
+                <span className="text-body font-body font-bold text-zinc-800 text-[14px]">{formatSex(animal.animal_sex)}</span>
               </div>
               <div className="bg-white border border-brand-border p-3.5 rounded-xl flex flex-col gap-0.5 shadow-sm">
                 <span className="text-caption font-caption text-zinc-400 text-[11px] font-semibold">체중</span>
@@ -253,7 +275,7 @@ function AnimalDetail() {
               <h3 className="text-[18px] font-semibold text-on-surface font-semibold">건강 정보</h3>
             </div>
             <p className="text-body font-body text-zinc-700 leading-relaxed">
-              현재 건강 상태는 5단계 중 {animal.health_state}단계로 매우 안정적이며 양호합니다. 기본 전염병 진단 키트 검사를 마쳤고 모두 음성 판정을 받았습니다. {animal.neutered === "완료" || animal.neutered === "예" ? "중성화 수술이 완료되어 추가적인 수술 절차가 필요 없습니다." : "중성화 수술이 예정되어 있거나 미완료된 상태입니다."} 예방 접종 기록 카드와 상세한 진단 결과지는 센터 방문 및 서류 작성 시 함께 전달해 드립니다.
+              현재 건강 상태는 5단계 중 {animal.health_state}단계로 매우 안정적이며 양호합니다. 기본 전염병 진단 키트 검사를 마쳤고 모두 음성 판정을 받았습니다. {animal.neutered === "완료" || animal.neutered === "예" || animal.neutered === true ? "중성화 수술이 완료되어 추가적인 수술 절차가 필요 없습니다." : "중성화 수술이 예정되어 있거나 미완료된 상태입니다."} 예방 접종 기록 카드와 상세한 진단 결과지는 센터 방문 및 서류 작성 시 함께 전달해 드립니다.
             </p>
           </div>
           
