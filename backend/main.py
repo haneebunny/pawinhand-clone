@@ -17,10 +17,10 @@ app = FastAPI(
     version="0.1.0",
 )
 
-# CORS 허용 주소는 config 한 곳에서 관리
+# CORS 허용 주소 전체 개방 (MVP 데모용)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=config.CORS_ORIGINS,
+    allow_origins=["*"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
