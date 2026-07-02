@@ -1,5 +1,5 @@
 """
-schemas_B.py — [개발자 B] 진단·매칭 API의 요청/응답 '형태'(Pydantic).
+schemas.py — [개발자 B] 진단·매칭 API의 요청/응답 '형태'(Pydantic).
 
 FastAPI가 이 틀에 맞는지 자동 검사해줘서, 값이 빠지거나 타입이 틀리면 바로 알려줍니다.
 LLM 출력도 이 모델로 강제(Structured Outputs)해서 JSON 파싱이 깨지지 않게 합니다.

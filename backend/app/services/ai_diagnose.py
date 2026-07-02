@@ -1,5 +1,5 @@
 """
-ai_diagnose_B.py — [개발자 B] 적합도 진단 LangChain 서비스.
+ai_diagnose.py — [개발자 B] 적합도 진단 LangChain 서비스.
 
 흐름: 사용자 설문(2단계) + RAG 참고자료(pet_adoption_rules) → LLM → JSON 강제 → DiagnoseResponse
 
@@ -11,8 +11,8 @@ ai_diagnose_B.py — [개발자 B] 적합도 진단 LangChain 서비스.
 """
 from typing import List
 
-from .. import config, rag_B
-from ..schemas_B import DiagnoseResponse, MonthlyCost, SurveyInput
+from .. import config, rag
+from ..schemas import DiagnoseResponse, MonthlyCost, SurveyInput
 
 # LangChain은 설치·키가 있을 때만 사용. 없으면 로컬 규칙으로 폴백.
 try:
@@ -63,7 +63,7 @@ def _llm_diagnose(survey: SurveyInput) -> DiagnoseResponse:
     chain = _build_prompt() | structured
     result: DiagnoseResponse = chain.invoke(
         {
-            "reference": rag_B.load_reference_text(bundle="A"),
+            "reference": rag.load_reference_text(bundle="A"),
             "housing": survey.housing,
             "out_hours": survey.out_hours,
             "walk_time": survey.walk_time,
@@ -141,5 +141,5 @@ def run_diagnose(survey: SurveyInput) -> DiagnoseResponse:
             try:
                 return _llm_diagnose(survey)
             except Exception as e:
-                print(f"[ai_diagnose_B] LLM 실패(attempt {attempt+1}): {e!r}")
+                print(f"[ai_diagnose] LLM 실패(attempt {attempt+1}): {e!r}")
     return _fallback_diagnose(survey)

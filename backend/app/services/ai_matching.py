@@ -1,5 +1,5 @@
 """
-ai_matching_B.py — [개발자 B] 매칭 추천 LangChain 서비스.
+ai_matching.py — [개발자 B] 매칭 추천 LangChain 서비스.
 
 흐름: 사용자 설문 + 동물 데이터(activity·sociability 등 척도) → LLM → 3~5마리 추천
       각 추천: animal_id + match_score(1~10) + recommend_reason(한 줄).
@@ -11,8 +11,8 @@ ai_matching_B.py — [개발자 B] 매칭 추천 LangChain 서비스.
 """
 from typing import List
 
-from .. import config, rag_B
-from ..schemas_B import MatchResponse, MatchResult, SurveyInput
+from .. import config, rag
+from ..schemas import MatchResponse, MatchResult, SurveyInput
 
 try:
     from langchain_core.prompts import ChatPromptTemplate
@@ -54,7 +54,7 @@ def _candidate_brief(animals: List[dict]) -> str:
 
 
 def _llm_match(survey: SurveyInput) -> MatchResponse:
-    animals = rag_B.load_animals()
+    animals = rag.load_animals()
     llm = ChatOpenAI(model=config.OPENAI_MODEL, api_key=config.OPENAI_API_KEY, temperature=0.3)
     structured = llm.with_structured_output(MatchResponse)
     prompt = ChatPromptTemplate.from_messages(
@@ -95,7 +95,7 @@ def _llm_match(survey: SurveyInput) -> MatchResponse:
 
 def _fallback_match(survey: SurveyInput) -> MatchResponse:
     """LLM 없이도 항상 3~5마리를 내는 로컬 점수 규칙."""
-    animals = rag_B.load_animals()
+    animals = rag.load_animals()
     t_act = _ACTIVITY_TARGET.get(survey.activity_pref, 3)
     t_soc = _SOC_TARGET.get(survey.sociability_pref, 3)
     kw = set(survey.keywords or [])
@@ -152,5 +152,5 @@ def run_match(survey: SurveyInput) -> MatchResponse:
             try:
                 return _llm_match(survey)
             except Exception as e:
-                print(f"[ai_matching_B] LLM 실패(attempt {attempt+1}): {e!r}")
+                print(f"[ai_matching] LLM 실패(attempt {attempt+1}): {e!r}")
     return _fallback_match(survey)

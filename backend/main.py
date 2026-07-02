@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app import config
-from app.routers import diagnose_B, match_B
+from app.routers import diagnose, match
 
 app = FastAPI(
     title="Pawinhand Clone API (B: AI 진단·매칭)",
@@ -46,8 +46,8 @@ async def unhandled_error_handler(request: Request, exc: Exception):
 
 
 # 라우터 등록 (개발자 B)
-app.include_router(diagnose_B.router)   # POST /api/diagnose
-app.include_router(match_B.router)      # POST /api/match
+app.include_router(diagnose.router)   # POST /api/diagnose
+app.include_router(match.router)      # POST /api/match
 
 # 개발자 A(조회/질문지)가 합류하면 아래 주석을 풀어 등록:
 # from app.routers import animals_A, questions_A
