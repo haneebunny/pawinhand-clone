@@ -212,7 +212,7 @@ export default function Home() {
               {/* Image aspect-square */}
               <div className="relative aspect-square overflow-hidden bg-surface-container">
                 <img
-                  src={animal.photo}
+                  src={animal.photos && animal.photos.length > 0 ? animal.photos[0] : (animal.photo || "https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&q=80&w=400")}
                   alt={animal.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
@@ -224,7 +224,7 @@ export default function Home() {
                     favorite
                   </span>
                   <span className="font-caption text-[11px] font-bold text-white">
-                    {animal.likes}
+                    {animal.bell_count || 0}
                   </span>
                 </div>
               </div>
@@ -243,10 +243,10 @@ export default function Home() {
                 </p>
                 <div className="pt-2 border-t border-surface-variant/20">
                   <p className="font-caption text-[11px] text-on-surface-variant truncate">
-                    {animal.notice_no.split("-")[0]}보호소
+                    {(animal.notice_no && animal.notice_no.split("-")[0]) || "보호"}보호소
                   </p>
                   <p className="font-caption text-[11px] text-primary-container font-bold">
-                    {animal.notice_start.slice(2)}~{animal.notice_end.slice(2)}
+                    {(animal.notice_start || "").slice(2)}~{(animal.notice_end || "").slice(2)}
                   </p>
                 </div>
               </div>
