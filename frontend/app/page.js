@@ -126,7 +126,7 @@ export default function Home() {
           {/* Left Arrow */}
           <button
             onClick={handlePrevSlide}
-            className="absolute left-sm top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/70 hover:bg-white flex items-center justify-center border border-surface-variant/20 shadow-sm cursor-pointer active:scale-90 transition-transform"
+            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/70 hover:bg-white flex items-center justify-center border border-surface-variant/20 shadow-sm cursor-pointer active:scale-90 transition-transform"
           >
             <span className="material-symbols-outlined text-[18px]">chevron_left</span>
           </button>
@@ -134,13 +134,13 @@ export default function Home() {
           {/* Right Arrow */}
           <button
             onClick={handleNextSlide}
-            className="absolute right-sm top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/70 hover:bg-white flex items-center justify-center border border-surface-variant/20 shadow-sm cursor-pointer active:scale-90 transition-transform"
+            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/70 hover:bg-white flex items-center justify-center border border-surface-variant/20 shadow-sm cursor-pointer active:scale-90 transition-transform"
           >
             <span className="material-symbols-outlined text-[18px]">chevron_right</span>
           </button>
 
           {/* Indicators */}
-          <div className="absolute bottom-md right-lg md:right-xl z-20 bg-black/40 backdrop-blur-sm px-sm py-[4px] rounded-full flex items-center gap-1">
+          <div className="absolute bottom-4 right-4 md:right-6 z-20 bg-[#FF7A50]/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
             <span className="font-caption text-[11px] font-bold text-white tracking-wide">
               {currentSlide + 1} / {BANNER_SLIDES.length}
             </span>
