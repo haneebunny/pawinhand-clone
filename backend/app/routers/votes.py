@@ -16,14 +16,61 @@ router = APIRouter(
     tags=["name-votes"],
 )
 
+
+# 동물의 특성을 기반으로 LLM이 어울리는 한국어 이름 3개를 추천하는 헬퍼 함수
+def generate_initial_names_via_llm(animal: dict) -> List[str]:
+    from app import config
+    # 1. API 키가 없으면 기본 폴백 즉시 반환
+    if not config.OPENAI_API_KEY:
+        return ["누룽지", "버터", "초코"]
+
+    try:
+        from langchain_openai import ChatOpenAI
+        from langchain_core.prompts import ChatPromptTemplate
+        
+        # 동물의 특성 수집
+        breeds = animal.get("breeds", "믹스견")
+        found_location = animal.get("found_location", "보호소 인근")
+        personality = animal.get("personality_comment", "")
+        species = animal.get("species", "개")
+
+        llm = ChatOpenAI(model=config.OPENAI_MODEL, api_key=config.OPENAI_API_KEY, temperature=0.8)
+        
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", "당신은 작명 센스가 뛰어난 유기동물 보호소의 베테랑 직원입니다. 동물의 특성을 보고 그 동물에게 행운을 가져다줄 귀엽고 다정한 한국어 이름 후보 3개를 지어주세요."),
+            ("user", "유기동물 정보:\n- 축종: {species}\n- 품종: {breeds}\n- 발견장소: {found_location}\n- 성격/특징: {personality}\n\n이 동물의 사연이나 특징에 가장 잘 어울리는 이름 후보 딱 3개만 추천해 주세요. 불필요한 설명이나 번호 매김 없이 오직 이름만 쉼표로 구분해서 정확히 3개만 출력해 주세요. (예시: 누룽지,버터,초코)")
+        ])
+        
+        chain = prompt | llm
+        response = chain.invoke({
+            "species": species,
+            "breeds": breeds,
+            "found_location": found_location,
+            "personality": personality
+        })
+        
+        result_text = response.content.strip()
+        # 쉼표 구분 파싱 및 정제
+        names = [n.strip() for n in result_text.split(",") if n.strip()]
+        if len(names) >= 3:
+            return names[:3]
+        return ["누룽지", "버터", "초코"]  # 파싱 개수 미달 시 폴백
+    except Exception as e:
+        print(f"[votes] LLM 작명 추천 실패: {e}")
+        return ["누룽지", "버터", "초코"]
+
+
 # 기본 시연용 초기 후보군 데이터 생성 헬퍼
-def get_or_create_animal_votes(animal_id: str, votes_data: dict) -> dict:
+def get_or_create_animal_votes(animal_id: str, animal: dict, votes_data: dict) -> dict:
     if animal_id not in votes_data:
+        # LLM을 통해 동물의 개성에 맞춘 예쁜 작명 후보 3개 수령
+        recommended_names = generate_initial_names_via_llm(animal)
+        
         # 썰렁하지 않도록 기본 3가지 후보군 사전 득표 상태 세팅
         votes_data[animal_id] = [
-            {"name": "누룽지", "votes": 4},
-            {"name": "버터", "votes": 3},
-            {"name": "초코", "votes": 1}
+            {"name": recommended_names[0], "votes": 4},
+            {"name": recommended_names[1], "votes": 3},
+            {"name": recommended_names[2], "votes": 1}
         ]
         save_votes(votes_data)
     return votes_data[animal_id]
@@ -44,9 +91,9 @@ def get_name_votes(animal_id: str):
             detail="동물 정보를 찾을 수 없습니다."
         )
 
-    # 2. 이미 공식 이름이 지정되어 있는지 확인 (기존 이름이 '이름 없음', '지어주세요' 등이 아닌 유의미한 이름인 경우)
+    # 2. 이미 공식 이름이 지정되어 있는지 확인 (기존 이름이 '지어주세요' 등이 아닌 유의미한 이름인 경우)
     orig_name = target_animal.get("name", "").strip()
-    is_nameless = not orig_name or "없음" in orig_name or "지어주세요" in orig_name
+    is_nameless = not orig_name or "지어주세요" in orig_name
     
     if not is_nameless:
         # 공식 이름이 확정된 상태이므로 투표 후보군 없이 확정 이름만 반환
@@ -54,7 +101,7 @@ def get_name_votes(animal_id: str):
 
     # 3. 투표 정보 파일 로드
     votes_data = load_votes()
-    candidates_list = get_or_create_animal_votes(animal_id, votes_data)
+    candidates_list = get_or_create_animal_votes(animal_id, target_animal, votes_data)
 
     # 4. 투표 리스트 중 혹시 5표 이상인 것이 있는지 이중 검사
     confirmed_name = None
@@ -101,14 +148,14 @@ def submit_name_vote(animal_id: str, payload: VoteInput):
         )
 
     orig_name = target_animal.get("name", "").strip()
-    is_nameless = not orig_name or "없음" in orig_name or "지어주세요" in orig_name
+    is_nameless = not orig_name or "지어주세요" in orig_name
     
     if not is_nameless:
         return VotesResponse(confirmed_name=orig_name, candidates=[])
 
     # 투표 데이터 로드 및 갱신
     votes_data = load_votes()
-    candidates_list = get_or_create_animal_votes(animal_id, votes_data)
+    candidates_list = get_or_create_animal_votes(animal_id, target_animal, votes_data)
     
     vote_name = payload.name.strip()
     
