@@ -20,6 +20,8 @@ DATA_DIR = Path(os.getenv("DATA_DIR", str(REPO_ROOT / "data")))
 
 # 매칭에 쓰는 동물 고정 데이터 (개발자 A가 제공, B는 읽기만)
 ANIMALS_FILE = DATA_DIR / "animals.json"
+# 이름 지어주기 투표 보관용 임시 파일
+VOTES_FILE = DATA_DIR / "name_votes.json"
 # RAG 참고자료 (프롬프트에 텍스트로 붙임)
 RULES_FILE = DATA_DIR / "pet_adoption_rules.jsonl"
 SCREENING_FILE = DATA_DIR / "pre_adoption_screening.jsonl"

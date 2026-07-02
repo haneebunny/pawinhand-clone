@@ -109,3 +109,19 @@ class QuestionResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# ========== 이름 투표소용 스펙 (GET/POST /api/animals/{id}/votes) ==========
+class CandidateSchema(BaseModel):
+    name: str = Field(..., description="이름 후보")
+    votes: int = Field(..., description="득표 수")
+
+
+class VotesResponse(BaseModel):
+    confirmed_name: Optional[str] = Field(None, description="5표 이상 득표하여 최종 확정된 공식 이름 (없으면 None)")
+    candidates: List[CandidateSchema] = Field(default_factory=list, description="현재 등록된 이름 후보 목록")
+
+
+class VoteInput(BaseModel):
+    name: str = Field(..., min_length=1, max_length=10, description="추천하거나 투표할 이름 후보명")
+
