@@ -246,7 +246,7 @@ export default function DiagnosePage() {
                   <button
                     key={opt}
                     onClick={() => setHousing(opt)}
-                    className={`h-[36px] px-4 rounded-full font-medium text-caption transition-colors cursor-pointer ${
+                    className={`h-[36px] px-4 rounded-full font-medium text-caption transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                       housing === opt
                         ? "bg-[#FF7A50] text-white"
                         : "bg-[#F5F0EB] text-on-surface-variant hover:bg-zinc-200"
@@ -266,7 +266,7 @@ export default function DiagnosePage() {
                   <button
                     key={opt}
                     onClick={() => setOutHours(opt)}
-                    className={`h-[36px] px-4 rounded-full font-medium text-caption transition-colors cursor-pointer ${
+                    className={`h-[36px] px-4 rounded-full font-medium text-caption transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                       outHours === opt
                         ? "bg-[#FF7A50] text-white"
                         : "bg-[#F5F0EB] text-on-surface-variant hover:bg-zinc-200"
@@ -286,7 +286,7 @@ export default function DiagnosePage() {
                   <button
                     key={opt}
                     onClick={() => setWalkTime(opt)}
-                    className={`h-[36px] px-4 rounded-full font-medium text-caption transition-colors cursor-pointer ${
+                    className={`h-[36px] px-4 rounded-full font-medium text-caption transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                       walkTime === opt
                         ? "bg-[#FF7A50] text-white"
                         : "bg-[#F5F0EB] text-on-surface-variant hover:bg-zinc-200"
@@ -306,7 +306,7 @@ export default function DiagnosePage() {
                   <button
                     key={opt}
                     onClick={() => setPetExperience(opt)}
-                    className={`h-[36px] px-4 rounded-full font-medium text-caption transition-colors cursor-pointer ${
+                    className={`h-[36px] px-4 rounded-full font-medium text-caption transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                       petExperience === opt
                         ? "bg-[#FF7A50] text-white"
                         : "bg-[#F5F0EB] text-on-surface-variant hover:bg-zinc-200"
@@ -326,7 +326,7 @@ export default function DiagnosePage() {
                   <button
                     key={opt}
                     onClick={() => setBudget(opt)}
-                    className={`h-[36px] px-4 rounded-full font-medium text-caption transition-colors cursor-pointer ${
+                    className={`h-[36px] px-4 rounded-full font-medium text-caption transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                       budget === opt
                         ? "bg-[#FF7A50] text-white"
                         : "bg-[#F5F0EB] text-on-surface-variant hover:bg-zinc-200"
@@ -346,7 +346,7 @@ export default function DiagnosePage() {
                   <button
                     key={opt}
                     onClick={() => setChildPlan(opt)}
-                    className={`h-[36px] px-4 rounded-full font-medium text-caption transition-colors cursor-pointer ${
+                    className={`h-[36px] px-4 rounded-full font-medium text-caption transition-colors cursor-pointer whitespace-nowrap shrink-0 ${
                       childPlan === opt
                         ? "bg-[#FF7A50] text-white"
                         : "bg-[#F5F0EB] text-on-surface-variant hover:bg-zinc-200"

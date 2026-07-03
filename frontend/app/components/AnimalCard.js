@@ -21,13 +21,13 @@ export default function AnimalCard({ animal }) {
     return dateStr.replace(/-/g, ".");
   };
 
-  const isNameless = !animal.name || 
-                     animal.name.trim() === "" || 
-                     animal.name.includes("없음") || 
-                     animal.name.includes("지어주세요");
+  const isNameless = !animal.name ||
+    animal.name.trim() === "" ||
+    animal.name.includes("없음") ||
+    animal.name.includes("지어주세요");
 
   const displayName = isNameless ? "이름 짓는 중!" : animal.name;
-  
+
   // Calculate if the animal is actually in an urgent notice period (0 to 3 days left from real-time today)
   const isUrgent = (() => {
     if (!animal.notice_end || animal.notice_end.includes("상시")) return false;
@@ -36,7 +36,7 @@ export default function AnimalCard({ animal }) {
     const endDate = new Date(animal.notice_end);
     const diffTime = endDate - today;
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays >= 0 && diffDays <= 3;
+    return diffDays >= 0 && diffDays <= 7;
   })();
 
   return (
@@ -58,14 +58,14 @@ export default function AnimalCard({ animal }) {
           </div>
         )}
         {/* Bell/Notification Count Badge (Always visible with absolute count) */}
-        <div className="absolute bottom-2.5 right-2.5 bg-black/60 backdrop-blur-[2px] text-white px-2 py-0.5 rounded-full flex items-center gap-1 shadow-sm">
+        <div className="absolute top-2.5 right-2.5 bg-white/80 px-1.5 py-1 rounded-full flex items-center gap-0.5 shrink-0 ml-1">
           <span
-            className="material-symbols-outlined text-[10px] text-white"
-            style={{ fontVariationSettings: "'FILL' 1" }}
+            className="material-symbols-outlined text-yellow-400"
+            style={{ fontVariationSettings: "'FILL' 1", fontSize: "15px" }}
           >
             notifications
           </span>
-          <span className="text-white text-[10px] font-bold leading-none">
+          <span className="text-yellow-400 text-[11px] font-bold leading-none">
             {animal.bell_count || 0}
           </span>
         </div>
@@ -74,13 +74,15 @@ export default function AnimalCard({ animal }) {
       {/* Info Block */}
       <div className="p-3 flex-1 flex flex-col justify-between">
         <div>
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-on-surface text-[18px] font-bold leading-normal truncate max-w-[120px]">
-              {displayName}
-            </span>
-            <span className="text-on-surface-variant text-[13px] leading-normal">
-              {animal.animal_sex === "수컷" ? "♂️" : animal.animal_sex === "암컷" ? "♀️" : "❓"}
-            </span>
+          <div>
+            <div className="flex items-center justify-between">
+              <span className="text-on-surface text-[18px] font-bold leading-normal truncate max-w-[120px]">
+                {displayName}
+              </span>
+              <span className="text-on-surface-variant text-[13px] leading-normal">
+                {animal.animal_sex === "수컷" ? "♂️" : animal.animal_sex === "암컷" ? "♀️" : "❓"}
+              </span>
+            </div>
           </div>
           <p className="text-on-surface-variant text-[13px] leading-normal mb-3 truncate">
             {animal.breeds} • {formatAge(animal.animal_age)}
