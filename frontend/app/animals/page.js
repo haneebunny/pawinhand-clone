@@ -3,6 +3,7 @@
 import { Suspense, useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import AnimalCard from "../components/AnimalCard";
+import { AnimalCardSkeleton } from "../components/Skeleton";
 import { useSearchParams, useRouter } from "next/navigation";
 import { animals } from "../data/animals";
 import { shelters } from "../data/shelters";
@@ -110,10 +111,20 @@ function AnimalsList() {
   const router = useRouter();
   const shelterIdFilter = searchParams.get("shelter_id");
 
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [regionFilter, setRegionFilter] = useState("전체");
   const [speciesFilter, setSpeciesFilter] = useState("전체");
   const [sortBy, setSortBy] = useState("최신순");
+
+  // Trigger quick loading animation on filter/page changes to display Skeleton UI nicely
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 350); // 350ms of clean skeleton feedback
+    return () => clearTimeout(timer);
+  }, [regionFilter, speciesFilter, sortBy, currentPage, shelterIdFilter]);
 
   // Custom dropdown open state ('region' | 'species' | 'sort' | null)
   const [openDropdown, setOpenDropdown] = useState(null);
@@ -391,9 +402,15 @@ function AnimalsList() {
 
         {/* 4x5 Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4">
-          {paginatedAnimals.map((animal) => (
-            <AnimalCard key={animal.id} animal={animal} />
-          ))}
+          {loading ? (
+            Array.from({ length: 8 }).map((_, idx) => (
+              <AnimalCardSkeleton key={idx} />
+            ))
+          ) : (
+            paginatedAnimals.map((animal) => (
+              <AnimalCard key={animal.id} animal={animal} />
+            ))
+          )}
         </div>
 
         {/* Pagination Controls */}
@@ -469,8 +486,12 @@ function AnimalsList() {
 export default function AnimalsListPage() {
   return (
     <Suspense fallback={
-      <div className="text-center py-8 font-body text-on-surface-variant max-w-[1024px] mx-auto px-4 mt-8">
-        보호 목록을 불러오는 중입니다...
+      <div className="max-w-[1024px] mx-auto px-4 md:px-6 py-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 lg:gap-4 mt-24">
+          {Array.from({ length: 8 }).map((_, idx) => (
+            <AnimalCardSkeleton key={idx} />
+          ))}
+        </div>
       </div>
     }>
       <AnimalsList />
