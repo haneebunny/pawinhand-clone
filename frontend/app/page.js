@@ -1,41 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import AnimalCard from "./components/AnimalCard";
 import { animals } from "./data/animals";
-
-const BANNER_SLIDES = [
-  {
-    id: 1,
-    title: "매달, 포인핸드를 응원하는\n가장 쉬운 방법",
-    subtitle: "카카오같이가치 ♥ 포인핸드 ♥ 카카오임팩트",
-    bgClass: "from-[#FFF8E7] to-[#FFEAD2]",
-    btnText: "기부하러 가기",
-    btnColor: "bg-[#FF5A5F]",
-    imagePlaceholder: "🐶",
-  },
-  {
-    id: 2,
-    title: "나에게 딱 맞는 반려동물,\nAI로 매칭받아 보세요",
-    subtitle: "6가지 생활 환경 진단 & 원하는 성향 매칭",
-    bgClass: "from-[#FFF1EC] to-[#FFE2D6]",
-    btnText: "AI 진단 시작하기",
-    btnColor: "bg-[#FF7A50]",
-    link: "/diagnose",
-    imagePlaceholder: "✨",
-  },
-  {
-    id: 3,
-    title: "유기동물 보호소의 생생한\n위치 지도를 확인하세요",
-    subtitle: "우리 동네 보호소와 보호 중인 동물들 시각화",
-    bgClass: "from-[#E8F8F5] to-[#D1F2EB]",
-    btnText: "지도로 보기",
-    btnColor: "bg-[#1ABC9C]",
-    link: "/map",
-    imagePlaceholder: "🗺",
-  }
-];
 
 function formatAge(age) {
   if (typeof age === "number") {
@@ -50,26 +17,6 @@ function formatAge(age) {
 }
 
 export default function Home() {
-  const [currentSlide, setCurrentSlide] = useState(0);
-
-  // Auto-play slides every 4 seconds
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % BANNER_SLIDES.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, []);
-
-  const handlePrevSlide = (e) => {
-    e.stopPropagation();
-    setCurrentSlide((prev) => (prev - 1 + BANNER_SLIDES.length) % BANNER_SLIDES.length);
-  };
-
-  const handleNextSlide = (e) => {
-    e.stopPropagation();
-    setCurrentSlide((prev) => (prev + 1) % BANNER_SLIDES.length);
-  };
-
   // Display only first 8 animals sorted by closest notice_end (urgent closure first)
   const recommendedAnimals = [...animals]
     .sort((a, b) => {
@@ -81,77 +28,15 @@ export default function Home() {
 
   return (
     <main className="pb-8">
-      {/* 1. Hero Promotion Banner Carousel */}
-      <section className="relative overflow-hidden bg-zinc-50 border-b border-surface-variant/20">
-        {/* Slide Wrapper - Reduced Height to 280px / 320px for compact sizing */}
-        <div className="relative h-[260px] md:h-[300px] w-full max-w-[1024px] mx-auto">
-          {BANNER_SLIDES.map((slide, index) => {
-            const isActive = index === currentSlide;
-            return (
-              <div
-                key={slide.id}
-                className={`absolute inset-0 w-full h-full flex items-center justify-between px-4 md:px-6 transition-all duration-700 ease-in-out bg-gradient-to-r ${slide.bgClass} ${isActive ? "opacity-100 translate-x-0 z-10" : "opacity-0 translate-x-8 -z-10"
-                  }`}
-              >
-                {/* Left text block */}
-                <div className="max-w-[65%] md:max-w-[60%] shrink-0">
-                  <h2 className="font-h1 text-[22px] md:text-[32px] text-on-surface mb-3 leading-tight font-bold whitespace-pre-line">
-                    {slide.title}
-                  </h2>
-                  <div className="flex items-center gap-1 mb-4">
-                    <span className="text-[13px] leading-normal text-on-surface-variant">
-                      {slide.subtitle}
-                    </span>
-                  </div>
-                  {slide.link ? (
-                    <Link
-                      href={slide.link}
-                      className={`${slide.btnColor} text-white px-4 md:px-6 h-[44px] md:h-[48px] rounded-full font-button-lg text-caption md:text-body hover:shadow-md transition-all active:scale-95 inline-flex items-center justify-center`}
-                    >
-                      {slide.btnText}
-                    </Link>
-                  ) : (
-                    <button
-                      className={`${slide.btnColor} text-white px-4 md:px-6 h-[44px] md:h-[48px] rounded-full font-button-lg text-caption md:text-body hover:shadow-md transition-all active:scale-95 flex items-center justify-center`}
-                    >
-                      {slide.btnText}
-                    </button>
-                  )}
-                </div>
-
-                {/* Right image/icon placeholder block */}
-                <div className="flex items-center justify-center w-[30%] md:w-[35%] h-[80%] relative">
-                  <div className="w-[100px] h-[100px] md:w-[150px] md:h-[150px] rounded-full bg-white/40 flex items-center justify-center text-[48px] md:text-[72px] border border-white/60 shadow-inner select-none">
-                    {slide.imagePlaceholder}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-
-          {/* Left Arrow */}
-          <button
-            onClick={handlePrevSlide}
-            className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/70 hover:bg-white flex items-center justify-center border border-surface-variant/20 shadow-sm cursor-pointer active:scale-90 transition-transform"
-          >
-            <span className="material-symbols-outlined text-[18px]">chevron_left</span>
-          </button>
-
-          {/* Right Arrow */}
-          <button
-            onClick={handleNextSlide}
-            className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-8 h-8 rounded-full bg-white/70 hover:bg-white flex items-center justify-center border border-surface-variant/20 shadow-sm cursor-pointer active:scale-90 transition-transform"
-          >
-            <span className="material-symbols-outlined text-[18px]">chevron_right</span>
-          </button>
-
-          {/* Indicators */}
-          <div className="absolute bottom-4 right-4 md:right-6 z-20 bg-[#FF7A50]/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center gap-1 shadow-sm">
-            <span className="font-caption text-[11px] font-bold text-white tracking-wide">
-              {currentSlide + 1} / {BANNER_SLIDES.length}
-            </span>
-          </div>
-        </div>
+      {/* 1. Hero Promotion Banner (Single Static Image) */}
+      <section className="relative mx-auto overflow-hidden w-full max-w-[1024px] border-b border-surface-variant/20">
+        <Link href="/diagnose" className="block w-full hover:opacity-95 transition-opacity duration-300">
+          <img
+            src="/img/banner.png"
+            alt="포인핸드 AI 입양 적합도 진단 배너"
+            className="w-full h-[160px] sm:h-auto object-cover sm:object-contain"
+          />
+        </Link>
       </section>
 
       {/* 2. AI Diagnostic Entry Card */}
@@ -184,24 +69,23 @@ export default function Home() {
 
       {/* 3. Recommended Animals Grid */}
       <section className="max-w-[1024px] mx-auto px-4 md:px-6">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div>
             <h2 className="text-[22px] font-bold tracking-tight leading-snug text-on-surface">이달의 추천 입양동물</h2>
             <p className="text-[13px] leading-normal text-on-surface-variant mt-1">
               새로운 가족을 기다리는 특별한 친구들을 소개합니다
             </p>
           </div>
-          <div className="flex items-center gap-2">
-
+          <div className="flex items-center gap-2 shrink-0">
             <Link
               href="/map"
-              className="flex items-center gap-1 bg-white border border-surface-variant/50 px-4 py-2 rounded-lg text-[16px] font-semibold text-on-surface-variant hover:bg-surface-container-low transition-colors"
+              className="flex items-center gap-1.5 bg-white border border-surface-variant/50 px-3.5 py-2 rounded-lg text-[14px] md:text-[16px] font-semibold text-on-surface-variant hover:bg-surface-container-low transition-colors whitespace-nowrap shrink-0"
             >
               <span className="material-symbols-outlined text-[20px]">map</span>지도로 보기
             </Link>
             <Link
               href="/animals"
-              className="flex items-center gap-1 bg-white border border-surface-variant/50 px-4 py-2 rounded-lg text-[16px] font-semibold text-on-surface-variant hover:bg-surface-container-low transition-colors"
+              className="flex items-center gap-1.5 bg-white border border-surface-variant/50 px-3.5 py-2 rounded-lg text-[14px] md:text-[16px] font-semibold text-on-surface-variant hover:bg-surface-container-low transition-colors whitespace-nowrap shrink-0"
             >
               전체보기
             </Link>

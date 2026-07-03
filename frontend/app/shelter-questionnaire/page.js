@@ -308,7 +308,7 @@ export default function ShelterQuestionnairePage() {
       </section>
 
       {/* Category Tabs */}
-      <nav className="mb-6 overflow-x-auto hide-scrollbar -mx-lg px-4">
+      <nav className="mb-6 overflow-x-auto hide-scrollbar -mx-4 px-4">
         <div className="flex gap-2 w-max">
           {CATEGORIES.map((cat) => {
             const isActive = activeTab === cat;

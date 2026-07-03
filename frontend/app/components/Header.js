@@ -15,7 +15,7 @@ export default function Header() {
     <header className="fixed top-0 left-0 w-full z-50 bg-white h-[72px] flex items-center px-4 md:px-6 border-b border-surface-variant/30">
       <div className="max-w-[1024px] w-full mx-auto flex items-center justify-between">
         <div className="flex items-center">
-          <Link href="/" className="text-[20px] font-bold text-primary-container tracking-tight">
+          <Link href="/" className="text-[20px] font-bold text-primary-container tracking-tight cursor-pointer px-2 py-1 block">
             PAWINHAND
           </Link>
         </div>

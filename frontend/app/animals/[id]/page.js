@@ -229,13 +229,13 @@ function AnimalDetail() {
       <main className="max-w-[1024px] mx-auto px-4 md:px-6 py-8 flex flex-col gap-6">
 
         {/* 1. Header Row (Shelter Name & Status) */}
-        <section className="flex justify-between items-center bg-white border border-brand-border px-6 py-4 rounded-2xl shadow-sm">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-[20px] text-secondary">domain</span>
-            <span className="font-bold text-[18px] text-on-surface">{shelter.name}</span>
-            <span className="material-symbols-outlined text-[16px] text-green-500">check_circle</span>
+        <section className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white border border-brand-border px-4 py-3.5 sm:px-6 sm:py-4 rounded-2xl shadow-sm">
+          <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+            <span className="material-symbols-outlined text-[20px] text-secondary shrink-0">domain</span>
+            <span className="font-bold text-[15px] sm:text-[18px] text-on-surface leading-tight break-all">{shelter.name}</span>
+            <span className="material-symbols-outlined text-[16px] text-green-500 shrink-0">check_circle</span>
           </div>
-          <span className="bg-[#2c694e] text-white text-caption font-semibold px-3 py-1 rounded-md">
+          <span className="bg-[#2c694e] text-white text-[12px] font-semibold px-3 py-1 rounded-md shrink-0 self-start sm:self-auto">
             보호중
           </span>
         </section>
@@ -399,10 +399,10 @@ function AnimalDetail() {
                 <span className="text-caption font-caption text-zinc-400 text-[11px] font-semibold">중성화 여부</span>
                 <span className="text-body font-body font-bold text-zinc-800 text-[14px]">{neuteredText}</span>
               </div>
-              <div className="bg-white border border-brand-border p-3.5 rounded-xl flex flex-col gap-0.5 shadow-sm">
+              <div className="bg-white border border-brand-border p-3.5 rounded-xl flex flex-col gap-0.5 shadow-sm overflow-hidden">
                 <span className="text-caption font-caption text-zinc-400 text-[11px] font-semibold">공고기한</span>
-                <span className="text-body font-body font-bold text-primary text-[13px] truncate">
-                  {(animal.notice_start || "").replace(/-/g, ".")} ~ {animal.notice_end && animal.notice_end.includes("상시") ? "상시" : (animal.notice_end || "").replace(/-/g, ".")}
+                <span className="text-body font-body font-bold text-primary text-[11px] sm:text-[13px] whitespace-nowrap">
+                  {(animal.notice_start || "").replace(/-/g, ".").slice(2)} ~ {animal.notice_end && animal.notice_end.includes("상시") ? "상시" : (animal.notice_end || "").replace(/-/g, ".").slice(2)}
                 </span>
               </div>
             </div>
