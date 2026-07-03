@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { animals } from "../../data/animals";
 import { shelters } from "../../data/shelters";
+import { MatchCardSkeleton } from "../../components/Skeleton";
 
 function formatAge(age) {
   if (typeof age === "number") {
@@ -214,10 +215,20 @@ export default function MatchResultsPage() {
 
   if (loading) {
     return (
-      <div className="max-w-[1024px] mx-auto px-4 md:px-6 py-giant min-h-[60vh] flex flex-col items-center justify-center gap-4">
-        <div className="w-12 h-12 border-4 border-[#FF7A50] border-t-transparent rounded-full animate-spin"></div>
-        <h3 className="text-[18px] font-semibold leading-normal text-on-surface font-semibold">적합한 아이들을 매칭하는 중입니다...</h3>
-        <p className="text-[13px] leading-normal text-on-surface-variant">입력해주신 생활환경과 선호도를 기반으로 매칭 중입니다.</p>
+      <div className="bg-brand-ivory min-h-screen pt-4 pb-8">
+        <div className="max-w-[1024px] mx-auto px-4 md:px-6 py-8">
+          <header className="mb-8">
+            <div className="h-7 w-64 bg-zinc-200 rounded-md mb-2 animate-pulse" />
+            <div className="h-4.5 w-80 bg-zinc-200 rounded-md animate-pulse" />
+          </header>
+
+          <div className="flex flex-col gap-5">
+            <MatchCardSkeleton />
+            <MatchCardSkeleton />
+            <MatchCardSkeleton />
+            <MatchCardSkeleton />
+          </div>
+        </div>
       </div>
     );
   }
