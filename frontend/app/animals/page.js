@@ -111,11 +111,31 @@ function AnimalsList() {
   const router = useRouter();
   const shelterIdFilter = searchParams.get("shelter_id");
 
+  const [animalsList, setAnimalsList] = useState(animals);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [regionFilter, setRegionFilter] = useState("전체");
   const [speciesFilter, setSpeciesFilter] = useState("전체");
   const [sortBy, setSortBy] = useState("최신순");
+
+  // Fetch live animals data from backend API
+  useEffect(() => {
+    const fetchLiveAnimals = async () => {
+      try {
+        const apiBase = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+        const res = await fetch(`${apiBase}/api/animals`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            setAnimalsList(data);
+          }
+        }
+      } catch (e) {
+        console.warn("Failed to fetch live animals from backend, using static local fallback", e);
+      }
+    };
+    fetchLiveAnimals();
+  }, []);
 
   // Trigger quick loading animation on filter/page changes to display Skeleton UI nicely
   useEffect(() => {
@@ -145,7 +165,7 @@ function AnimalsList() {
 
   // Filtering & Sorting Pipeline
   const getProcessedAnimals = () => {
-    let filtered = animals;
+    let filtered = animalsList;
 
     // Filter by shelter_id if query exists
     if (shelterIdFilter) {

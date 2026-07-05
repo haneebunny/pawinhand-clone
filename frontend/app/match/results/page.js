@@ -97,9 +97,23 @@ export default function MatchResultsPage() {
         if (response.ok) {
           const data = await response.json(); // { results: [{ animal_id, match_score, recommend_reason }] }
           
+          // Fetch live animals dataset first to use up-to-date names/photos from backend
+          let liveAnimalsList = animals;
+          try {
+            const liveRes = await fetch(`${API_BASE}/api/animals`);
+            if (liveRes.ok) {
+              const liveData = await liveRes.json();
+              if (Array.isArray(liveData) && liveData.length > 0) {
+                liveAnimalsList = liveData;
+              }
+            }
+          } catch (e) {
+            console.warn("Failed to fetch live animals for match results mapping, using local static data", e);
+          }
+
           // Map backend match results to local animals data
           const matched = data.results.map((res) => {
-            const info = animals.find((a) => a.id === res.animal_id);
+            const info = liveAnimalsList.find((a) => a.id === res.animal_id);
             if (info) {
               return {
                 ...info,
