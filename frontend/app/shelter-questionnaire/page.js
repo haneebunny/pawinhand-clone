@@ -303,7 +303,8 @@ export default function ShelterQuestionnairePage() {
         shelter_name: currentShelter ? currentShelter.name : "알 수 없음",
         match_score: localMatchScore,
         recommend_reason: localRecommendReason,
-        checked_items: checkedTexts
+        checked_items: checkedTexts,
+        all_checklist_items: checklistItems
       };
 
       const res = await fetch(`${API_BASE}/api/submit-application`, {

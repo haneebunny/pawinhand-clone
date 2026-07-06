@@ -45,6 +45,7 @@ class ApplicationInput(BaseModel):
     match_score: Optional[int] = None
     recommend_reason: Optional[str] = None
     checked_items: Optional[List[str]] = []
+    all_checklist_items: Optional[List[str]] = []
 
 @router.post("/submit-application")
 def submit_application(data: ApplicationInput):
@@ -104,8 +105,11 @@ def submit_application(data: ApplicationInput):
     ]
     
     checklist_lines = []
-    for item in default_items:
-        is_checked = any(item[:15] in checked for checked in (data.checked_items or []))
+    full_checklist = data.all_checklist_items if data.all_checklist_items else default_items
+    for item in full_checklist:
+        is_checked = item in (data.checked_items or [])
+        if not is_checked:
+            is_checked = any(item[:15] in checked for checked in (data.checked_items or []))
         marker = "✅" if is_checked else "❌"
         checklist_lines.append(f"{marker} {item}")
     
