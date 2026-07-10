@@ -130,7 +130,7 @@ export default function CarePage() {
       {/* 0. Page Header */}
       <section className="border-b border-[#F0E5DD] pb-6 mb-8">
         <span className="font-caption text-[11px] font-bold text-[#FF7A50] bg-[#FFF1EC] px-2.5 py-1 rounded-full uppercase tracking-wider">
-          💡 Pawinhand Premium Care Guide
+          💡 Pawinmatch Premium Care Guide
         </span>
         <h1 className="text-[28px] md:text-[32px] font-black text-zinc-800 mt-3 leading-tight">
           입양 후 케어

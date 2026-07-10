@@ -62,7 +62,7 @@ export default function DiagnosePage() {
   useEffect(() => {
     setMounted(true);
     try {
-      const savedInput = localStorage.getItem("pawinhand_survey_input");
+      const savedInput = localStorage.getItem("pawinmatch_survey_input");
       if (savedInput) {
         const data = JSON.parse(savedInput);
         if (data.housing) setHousing(data.housing);
@@ -128,9 +128,9 @@ export default function DiagnosePage() {
     };
 
     // Store user inputs for the matching page
-    localStorage.setItem("pawinhand_survey_input", JSON.stringify(requestBody));
-    localStorage.removeItem("pawinhand_match_results");
-    localStorage.removeItem("pawinhand_match_results_relaxed");
+    localStorage.setItem("pawinmatch_survey_input", JSON.stringify(requestBody));
+    localStorage.removeItem("pawinmatch_match_results");
+    localStorage.removeItem("pawinmatch_match_results_relaxed");
 
     const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || "https://pawinhand-clone-production-9194.up.railway.app";
 
@@ -620,9 +620,9 @@ export default function DiagnosePage() {
               <div className="flex flex-col sm:flex-row gap-3 w-full max-w-[500px] mt-4">
                 <button
                   onClick={() => {
-                    localStorage.removeItem("pawinhand_survey_input");
-                    localStorage.removeItem("pawinhand_match_results");
-                    localStorage.removeItem("pawinhand_match_results_relaxed");
+                    localStorage.removeItem("pawinmatch_survey_input");
+                    localStorage.removeItem("pawinmatch_match_results");
+                    localStorage.removeItem("pawinmatch_match_results_relaxed");
                     setHousing("");
                     setOutHours("");
                     setWalkTime("");

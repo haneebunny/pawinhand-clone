@@ -54,7 +54,7 @@ function MatchResultsContent() {
 
   useEffect(() => {
     // Read survey responses from localStorage
-    const savedSurvey = localStorage.getItem("pawinhand_survey_input");
+    const savedSurvey = localStorage.getItem("pawinmatch_survey_input");
     if (!savedSurvey) {
       setLoading(false);
       return;
@@ -64,7 +64,7 @@ function MatchResultsContent() {
     setSurveyInput(survey);
 
     // Check cache according to the current region relaxation state
-    const cacheKey = isRegionRelaxed ? "pawinhand_match_results_relaxed" : "pawinhand_match_results";
+    const cacheKey = isRegionRelaxed ? "pawinmatch_match_results_relaxed" : "pawinmatch_match_results";
     const savedMatches = localStorage.getItem(cacheKey);
     if (savedMatches) {
       try {
@@ -84,7 +84,7 @@ function MatchResultsContent() {
     // Collect currently recommended animal IDs to exclude them from the next recommendation
     let currentIds = [];
     if (isRegionRelaxed) {
-      const localMatches = localStorage.getItem("pawinhand_match_results");
+      const localMatches = localStorage.getItem("pawinmatch_match_results");
       if (localMatches) {
         try {
           const parsedLocal = JSON.parse(localMatches);

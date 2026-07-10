@@ -55,7 +55,7 @@ export default function Home() {
         <Link href="/diagnose" className="block w-full hover:opacity-95 transition-opacity duration-300">
           <img
             src="/img/banner.png"
-            alt="포인핸드 AI 입양 적합도 진단 배너"
+            alt="포인매치 AI 입양 적합도 진단 배너"
             className="w-full h-[160px] sm:h-auto object-cover sm:object-contain"
           />
         </Link>

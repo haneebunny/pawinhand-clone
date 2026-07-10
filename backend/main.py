@@ -12,8 +12,8 @@ from app import config
 from app.routers import diagnose, match, animals, questions, votes, application
 
 app = FastAPI(
-    title="Pawinhand Clone API (B: AI 진단·매칭)",
-    description="유기동물 입양 적합도 진단·매칭 데모 백엔드 (개발자 B)",
+    title="Pawinmatch API (AI 진단·매칭)",
+    description="유기동물 입양 적합도 진단·매칭 데모 백엔드 (포인매치)",
     version="0.1.0",
 )
 

@@ -175,7 +175,7 @@ function AnimalDetail() {
 
   useEffect(() => {
     try {
-      localStorage.setItem("pawinhand_last_viewed_animal_id", id);
+      localStorage.setItem("pawinmatch_last_viewed_animal_id", id);
     } catch (e) {
       console.warn("Failed to save last viewed animal ID", e);
     }
@@ -184,7 +184,7 @@ function AnimalDetail() {
       let matchDetail = null;
 
       // Try relaxed matches first
-      const savedMatchesRelaxed = localStorage.getItem("pawinhand_match_results_relaxed");
+      const savedMatchesRelaxed = localStorage.getItem("pawinmatch_match_results_relaxed");
       if (savedMatchesRelaxed) {
         const matches = JSON.parse(savedMatchesRelaxed);
         matchDetail = matches.find((m) => m.animal_id === id || m.id === id);
@@ -192,7 +192,7 @@ function AnimalDetail() {
 
       // If not found, try local matches
       if (!matchDetail) {
-        const savedMatches = localStorage.getItem("pawinhand_match_results");
+        const savedMatches = localStorage.getItem("pawinmatch_match_results");
         if (savedMatches) {
           const matches = JSON.parse(savedMatches);
           matchDetail = matches.find((m) => m.animal_id === id || m.id === id);

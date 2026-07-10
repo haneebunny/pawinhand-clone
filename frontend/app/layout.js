@@ -2,8 +2,8 @@ import "./globals.css";
 import Header from "./components/Header";
 
 export const metadata = {
-  title: "포인핸드 | 유기동물 입양 - 유기견 입양 & 유기묘 입양 | 전국 동물보호센터 연결",
-  description: "포인핸드 클론코딩 + AI 매칭 + 지도 시각화 서비스",
+  title: "포인매치 | 유기동물 입양 - 유기견 입양 & 유기묘 입양 | 전국 동물보호센터 연결",
+  description: "포인매치 - 포인핸드 클론코딩 + AI 매칭 + 지도 시각화 서비스",
 };
 
 export default function RootLayout({ children }) {
@@ -35,7 +35,7 @@ export default function RootLayout({ children }) {
                 <LinkBrand />
                 <p className="text-[13px] leading-normal text-on-surface-variant mb-6 leading-relaxed">
                   유기동물 입양의 새로운 기준을 만듭니다.<br />
-                  포인핸드는 보호소 아이들의 가족을 찾아주는 국내 1위 유기동물 입양 플랫폼입니다.
+                  포인매치는 보호소 아이들의 가족을 찾아주는 국내 1위 유기동물 입양 플랫폼입니다.
                 </p>
                 <div className="flex flex-col gap-3">
                   {/* 상단: SNS 4종 (인스타, 블로그, 카카오톡, 유튜브) */}
@@ -169,7 +169,7 @@ export default function RootLayout({ children }) {
             </div>
 
             <div className="border-t border-surface-variant/20 pt-4 text-center font-caption text-[11px] text-on-surface-variant/60">
-              © {new Date().getFullYear()} PAWINHAND. All rights reserved.
+              © {new Date().getFullYear()} PAWINMATCH. All rights reserved.
             </div>
           </div>
         </footer>
@@ -182,7 +182,7 @@ export default function RootLayout({ children }) {
 function LinkBrand() {
   return (
     <a href="/" className="text-[24px] font-bold text-primary-container mb-4 block">
-      PAWINHAND
+      PAWINMATCH
     </a>
   );
 }

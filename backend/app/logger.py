@@ -19,7 +19,7 @@ except Exception as e:
     print(f"[logger] 로그 디렉토리 생성 실패: {e}", file=sys.stderr)
 
 # 2. 로거 생성
-logger = logging.getLogger("pawinhand")
+logger = logging.getLogger("pawinmatch")
 logger.setLevel(logging.INFO)
 
 # 이미 핸들러가 설정되어 있다면 중복 방지
