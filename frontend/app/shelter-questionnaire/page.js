@@ -72,7 +72,7 @@ export default function ShelterQuestionnairePage() {
     if (typeof window !== "undefined") {
       let savedMatches = null;
       try {
-        const savedMatchesRelaxed = localStorage.getItem("pawinhand_match_results_relaxed");
+        const savedMatchesRelaxed = localStorage.getItem("pawinmatch_match_results_relaxed");
         if (savedMatchesRelaxed) {
           const parsed = JSON.parse(savedMatchesRelaxed);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -83,10 +83,10 @@ export default function ShelterQuestionnairePage() {
         console.warn(e);
       }
       if (!savedMatches) {
-        savedMatches = localStorage.getItem("pawinhand_match_results");
+        savedMatches = localStorage.getItem("pawinmatch_match_results");
       }
 
-      const savedSurvey = localStorage.getItem("pawinhand_survey_input");
+      const savedSurvey = localStorage.getItem("pawinmatch_survey_input");
       if (savedSurvey) {
         try {
           surveyInput = JSON.parse(savedSurvey);
@@ -96,7 +96,7 @@ export default function ShelterQuestionnairePage() {
       }
 
       // Read last viewed animal ID from memory prioritised
-      const lastAnimalId = localStorage.getItem("pawinhand_last_viewed_animal_id");
+      const lastAnimalId = localStorage.getItem("pawinmatch_last_viewed_animal_id");
 
       if (lastAnimalId) {
         const animal = animals.find((a) => a.id === lastAnimalId);
@@ -132,9 +132,9 @@ export default function ShelterQuestionnairePage() {
       let localSavedMatches = null;
 
       if (typeof window !== "undefined") {
-        localLastAnimalId = localStorage.getItem("pawinhand_last_viewed_animal_id");
+        localLastAnimalId = localStorage.getItem("pawinmatch_last_viewed_animal_id");
         try {
-          const savedMatchesRelaxed = localStorage.getItem("pawinhand_match_results_relaxed");
+          const savedMatchesRelaxed = localStorage.getItem("pawinmatch_match_results_relaxed");
           if (savedMatchesRelaxed) {
             const parsed = JSON.parse(savedMatchesRelaxed);
             if (Array.isArray(parsed) && parsed.length > 0) {
@@ -145,7 +145,7 @@ export default function ShelterQuestionnairePage() {
           console.warn(e);
         }
         if (!localSavedMatches) {
-          localSavedMatches = localStorage.getItem("pawinhand_match_results");
+          localSavedMatches = localStorage.getItem("pawinmatch_match_results");
         }
       }
 
@@ -266,7 +266,7 @@ export default function ShelterQuestionnairePage() {
         try {
           let savedMatches = null;
           try {
-            const savedMatchesRelaxed = localStorage.getItem("pawinhand_match_results_relaxed");
+            const savedMatchesRelaxed = localStorage.getItem("pawinmatch_match_results_relaxed");
             if (savedMatchesRelaxed) {
               const parsed = JSON.parse(savedMatchesRelaxed);
               if (Array.isArray(parsed) && parsed.length > 0) {
@@ -277,7 +277,7 @@ export default function ShelterQuestionnairePage() {
             console.warn(e);
           }
           if (!savedMatches) {
-            savedMatches = localStorage.getItem("pawinhand_match_results");
+            savedMatches = localStorage.getItem("pawinmatch_match_results");
           }
 
           if (savedMatches && currentAnimal) {

@@ -77,7 +77,7 @@ def submit_application(data: ApplicationInput):
         return {"status": "success", "message": "제출 완료 (로컬 데모 제출)"}
 
     # Build Slack Message Payload in Markdown Blocks
-    title = f"📢 *[포인핸드 AI 매칭] 신규 입양 신청서 접수!*"
+    title = f"📢 *[포인매치 AI 매칭] 신규 입양 신청서 접수!*"
     
     # Build AI match info if available
     match_info = ""

@@ -16,7 +16,7 @@ export default function Header() {
       <div className="max-w-[1024px] w-full mx-auto flex items-center justify-between">
         <div className="flex items-center">
           <Link href="/" className="text-[18px] md:text-[20px] font-bold text-primary-container tracking-tight cursor-pointer px-2 py-0.5 md:py-1 block">
-            PAWINHAND
+            PAWINMATCH
           </Link>
         </div>
         <nav className="flex items-center gap-3.5 sm:gap-5 md:gap-8">
